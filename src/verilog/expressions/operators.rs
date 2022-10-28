@@ -60,7 +60,7 @@ pub enum Unary {
     Minus,// -
 }
 
-fn unary() -> impl Parser<Out = Unary> {
+pub fn unary() -> impl Parser<Out = Unary> {
     Token("+").map(|_| Unary::Plus) |
     Token("-").map(|_| Unary::Minus)
 }
@@ -74,7 +74,7 @@ pub enum Arithmetic {
     Pow,// **
 }
 
-fn arithmetic() -> impl Parser<Out = Arithmetic> {
+pub fn arithmetic() -> impl Parser<Out = Arithmetic> {
     Token("**").map(|_| Arithmetic::Pow) |
     Token("+").map(|_| Arithmetic::Add) |
     Token("-").map(|_| Arithmetic::Sub) |
@@ -90,7 +90,7 @@ pub enum Relational {
     GreaterEqual,// >=
 }
 
-fn relational() -> impl Parser<Out = Relational> {
+pub fn relational() -> impl Parser<Out = Relational> {
     Token("<=").map(|_| Relational::LessEqual) |
     Token(">=").map(|_| Relational::GreaterEqual) |
     Token("<").map(|_| Relational::Less) |
@@ -104,7 +104,7 @@ pub enum Equality {
     LogicInequal,// !=
 }
 
-fn equality() -> impl Parser<Out = Equality> {
+pub fn equality() -> impl Parser<Out = Equality> {
     Token("===").map(|_| Equality::CaseEqual) |
     Token("!==").map(|_| Equality::CaseInequal) |
     Token("==").map(|_| Equality::LogicEqual) |
@@ -116,7 +116,7 @@ pub enum Logical {
     Or,// ||
 }
 
-fn logical() -> impl Parser<Out = Logical> {
+pub fn logical() -> impl Parser<Out = Logical> {
     Token("&&").map(|_| Logical::And) |
     Token("||").map(|_| Logical::Or)
 }
@@ -131,7 +131,7 @@ pub enum Bitwise {
     Neg,// ~
 }
 
-fn bitwise() -> impl Parser<Out = Bitwise> {
+pub fn bitwise() -> impl Parser<Out = Bitwise> {
     Token("&").map(|_| Bitwise::And) |
     Token("~&").map(|_| Bitwise::Nand) |
     Token("|").map(|_| Bitwise::Or) |
@@ -148,7 +148,7 @@ pub enum Shift {
     ArithmeticRight,// >>>
 }
 
-fn shift() -> impl Parser<Out = Shift> {
+pub fn shift() -> impl Parser<Out = Shift> {
     Token("<<<").map(|_| Shift::ArithmeticLeft) |
     Token(">>>").map(|_| Shift::ArithmeticRight) |
     Token("<<").map(|_| Shift::LogicalLeft) |

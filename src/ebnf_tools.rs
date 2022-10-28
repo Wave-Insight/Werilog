@@ -18,7 +18,8 @@ macro_rules! things {
             Token("{").map(|_| "Many(".to_string()) |
             Token("}").map(|_| ")".to_string()) |
             Token("[").map(|_| "Try(".to_string()) |
-            Token("]").map(|_| ")".to_string())),
+            Token("]").map(|_| ")".to_string())) |
+            ParseRegex(r"\S*").map(|x| format!("Token(\"{}\")", x)),
             Some(" ")
         ).map(|x|
             x.into_iter().reduce(|a,b| a+&b).unwrap_or_else(|| "error at things".to_string()))
