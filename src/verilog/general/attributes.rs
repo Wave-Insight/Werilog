@@ -6,8 +6,9 @@ use super::identifiers::identifier;
 pub fn attribute_instance() -> impl Parser<Out = Attr> {
     //TODO: check `attr_spec` has at least one
     Token("(*") >> whitespace() >>
-        Many(attr_spec(), Some(",")).map(|x| Attr(x))
+        Many(attr_spec(), Some(",")).map(Attr)
         << Token("*)")
+        << whitespace()
 }
 
 /// attr_spec ::= attr_name [ = constant_expression ]

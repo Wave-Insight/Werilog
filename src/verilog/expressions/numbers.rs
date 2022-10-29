@@ -1,8 +1,13 @@
 use parser_rust_simple::prelude::*;
+use super::ast::*;
 
 /// number ::= decimal_number | octal_number | binary_number | hex_number | real_number
-pub fn number() -> impl Parser<Out = String> {
-    decimal_number().or(octal_number()) | binary_number() | hex_number() | real_number()
+pub fn number() -> impl Parser<Out = Number> {
+    decimal_number().map(Number::Decimal)
+        | octal_number().map(Number::Octal)
+        | binary_number().map(Number::Binary)
+        | hex_number().map(Number::Hex)
+        | real_number().map(Number::Real)
 }
 
 /// real_number ::= unsigned_number . unsigned_number | unsigned_number [ . unsigned_number ] exp [ sign ] unsigned_number
