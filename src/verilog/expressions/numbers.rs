@@ -11,12 +11,12 @@ pub fn real_number() -> impl Parser<Out = String> {
 }
 
 /// exp ::= e | E
-pub fn exp() -> impl Parser<Out = String> {
-    ParseRegex("[eE]")
-}
+//fn exp() -> impl Parser<Out = String> {
+//    ParseRegex("[eE]")
+//}
 
 /// decimal_number ::= unsigned_number | [ size ] decimal_base unsigned_number | [ size ] decimal_base x_digit { _ } | [ size ] decimal_base z_digit { _ }
-pub fn decimal_number() -> impl Parser<Out = String> {
+fn decimal_number() -> impl Parser<Out = String> {
     unsigned_number()
         .or((Try(size()) * decimal_base() * unsigned_number()).map(|((a,b),c)|
             format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
@@ -30,38 +30,38 @@ pub fn decimal_number() -> impl Parser<Out = String> {
 }
 
 /// binary_number ::= [ size ] binary_base binary_value
-pub fn binary_number() -> impl Parser<Out = String> {
+fn binary_number() -> impl Parser<Out = String> {
     (Try(size()) * binary_base() * binary_value()).map(|((a,b),c)|
         format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
     )
 }
 
 /// octal_number ::= [ size ] octal_base octal_value
-pub fn octal_number() -> impl Parser<Out = String> {
+fn octal_number() -> impl Parser<Out = String> {
     (Try(size()) * octal_base() * octal_value()).map(|((a,b),c)|
         format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
     )
 }
 
 /// hex_number ::= [ size ] hex_base hex_value
-pub fn hex_number() -> impl Parser<Out = String> {
+fn hex_number() -> impl Parser<Out = String> {
     (Try(size()) * hex_base() * hex_value()).map(|((a,b),c)|
         format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
     )
 }
 
 /// sign ::= + | -
-pub fn sign() -> impl Parser<Out = String> {
-    ParseRegex(r"[+-]")
-}
+//fn sign() -> impl Parser<Out = String> {
+//    ParseRegex(r"[+-]")
+//}
 
 /// size ::= non_zero_unsigned_number
-pub fn size() -> impl Parser<Out = String> {
+fn size() -> impl Parser<Out = String> {
     non_zero_unsigned_number()
 }
 
 /// non_zero_unsigned_number ::= non_zero_decimal_digit { _ | decimal_digit }
-pub fn non_zero_unsigned_number() -> impl Parser<Out = String> {
+fn non_zero_unsigned_number() -> impl Parser<Out = String> {
     ParseRegex(r"[1-9][1-9_]")
 }
 
@@ -71,72 +71,72 @@ pub fn unsigned_number() -> impl Parser<Out = String> {
 }
 
 /// binary_value ::= binary_digit { _ | binary_digit }
-pub fn binary_value() -> impl Parser<Out = String> {
+fn binary_value() -> impl Parser<Out = String> {
     ParseRegex(r"[xXzZ\?01][xXzZ\?01_]*")
 }
 
 /// octal_value ::= octal_digit { _ | octal_digit }
-pub fn octal_value() -> impl Parser<Out = String> {
+fn octal_value() -> impl Parser<Out = String> {
     ParseRegex(r"[xXzZ\?0-7][xXzZ\?0-7_]*")
 }
 
 /// hex_value ::= hex_digit { _ | hex_digit }
-pub fn hex_value() -> impl Parser<Out = String> {
+fn hex_value() -> impl Parser<Out = String> {
     ParseRegex(r"[xXzZ\?0-9a-fA-F][xXzZ\?0-9a-fA-F_]*")
 }
 
 /// decimal_base ::= '[s|S]d | '[s|S]D
-pub fn decimal_base() -> impl Parser<Out = String> {
+fn decimal_base() -> impl Parser<Out = String> {
     ParseRegex(r"'[sS]?[dD]")
 }
 
 /// binary_base ::= '[s|S]b | '[s|S]B
-pub fn binary_base() -> impl Parser<Out = String> {
+fn binary_base() -> impl Parser<Out = String> {
     ParseRegex(r"'[sS]?[bB]")
 }
 
 /// octal_base ::= '[s|S]o | '[s|S]O
-pub fn octal_base() -> impl Parser<Out = String> {
+fn octal_base() -> impl Parser<Out = String> {
     ParseRegex(r"'[sS]?[oO]")
 }
 
 /// hex_base ::= '[s|S]h | '[s|S]H
-pub fn hex_base() -> impl Parser<Out = String> {
+fn hex_base() -> impl Parser<Out = String> {
     ParseRegex(r"'[sS]?[hH]")
 }
 
 /// non_zero_decimal_digit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-pub fn non_zero_decimal_digit() -> impl Parser<Out = String> {
-    ParseRegex(r"[1-9]")
-}
+//fn non_zero_decimal_digit() -> impl Parser<Out = String> {
+//    ParseRegex(r"[1-9]")
+//}
 
 /// decimal_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-pub fn decimal_digit() -> impl Parser<Out = String> {
-    ParseRegex(r"[0-9]")
-}
+//fn decimal_digit() -> impl Parser<Out = String> {
+//    ParseRegex(r"[0-9]")
+//}
 
 /// binary_digit ::= x_digit | z_digit | 0 | 1
-pub fn binary_digit() -> impl Parser<Out = String> {
-    ParseRegex(r"[xXzZ\?01]")
-}
+//fn binary_digit() -> impl Parser<Out = String> {
+//    ParseRegex(r"[xXzZ\?01]")
+//}
 
 /// octal_digit ::= x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
-pub fn octal_digit() -> impl Parser<Out = String> {
-    ParseRegex(r"[xXzZ\?0-7]")
-}
+//fn octal_digit() -> impl Parser<Out = String> {
+//    ParseRegex(r"[xXzZ\?0-7]")
+//}
 
 /// hex_digit ::= x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F 
-pub fn hex_digit() -> impl Parser<Out = String> {
-    ParseRegex(r"[xXzZ\?0-9a-fA-F]")
-}
+//fn hex_digit() -> impl Parser<Out = String> {
+//    ParseRegex(r"[xXzZ\?0-9a-fA-F]")
+//}
 
 /// x_digit ::= x | X
-pub fn x_digit() -> impl Parser<Out = String> {
+fn x_digit() -> impl Parser<Out = String> {
     ParseRegex("[xX]")
 }
 
 /// z_digit ::= z | Z | ?
-pub fn z_digit() -> impl Parser<Out = String> {
+fn z_digit() -> impl Parser<Out = String> {
     ParseRegex(r"[zZ\?]")
 }
 
