@@ -59,6 +59,16 @@ pub enum Primary {
     Number(Number),
 }
 
+pub enum NetLvalue {
+    VariableRef((String, Option<(Vec<ConstantExpression>, ConstantRangeExpression)>)),
+    Concatenation(Vec<NetLvalue>),
+}
+
+pub enum VariableLvalue {
+    VariableRef((String, Option<(Vec<Expression>, RangeExpression)>)),
+    Concatenation(Vec<VariableLvalue>),
+}
+
 pub enum Number {
     Decimal(String),
     Octal(String),
