@@ -12,7 +12,7 @@ fn conditional_expression() -> impl Parser<Out = (((Expression, Vec<Attr>), Expr
     (expression1().left(white_space()) << token("?"))
         * Many(attribute_instance(), None)
         * (expression2().left(white_space()) << token(":"))
-        * expression3()
+        * expression3().left(white_space())
 }
 
 /// constant_base_expression ::= constant_expression
@@ -71,12 +71,13 @@ pub fn dimension_constant_expression() -> impl Parser<Out = ConstantExpression> 
 ///  | unary_operator { attribute_instance } primary
 ///  | expression binary_operator { attribute_instance } expression
 ///  | conditional_expression
-pub fn expression() -> impl Parser<Out = Expression> {
-    primary().map(Expression::Primary)
+pub fn expression() -> impl Parser<Out = Expression> {//impl Parser<Out = Expression> {
+    (primary().map(Expression::Primary))
         //TODO
         /*.or(unary_operator() * Many(attribute_instance()) * primary())
-        .or(expression() * binary_operator() * Many(attribute_instance()) * expression())
-        .or(conditional_expression())*/
+        .or(expression() * binary_operator() * Many(attribute_instance()) * expression())*/
+        .or(tobox!(conditional_expression())
+            .map(|(((a,b),c),d)| Expression::Condition((Box::new(a), b, Box::new(c), Box::new(d)))))
 }
 
 /// expression1 ::= expression

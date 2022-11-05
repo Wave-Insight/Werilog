@@ -157,7 +157,7 @@ pub fn simple_identifier() -> impl Parser<Out = String> {
         Many(ParseRegex(r"[a-zA-Z_0-9\$]"),None)
             .map(|x| x.into_iter()
                                     .reduce(|a,b| a+&b)
-                                    .unwrap_or_else(|| "".to_string()))
+                                    .unwrap_or_default())
     ).map(|x| x.0+&x.1)
     
 }

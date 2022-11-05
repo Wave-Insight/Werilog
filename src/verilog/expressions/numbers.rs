@@ -24,34 +24,34 @@ pub fn real_number() -> impl Parser<Out = String> {
 fn decimal_number() -> impl Parser<Out = String> {
     unsigned_number()
         .or((Try(size()) * decimal_base() * unsigned_number()).map(|((a,b),c)|
-            format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
+            format!("{}{}{}", a.unwrap_or_default(), b, c)
         ))
         .or((Try(size()) * decimal_base() * x_digit() * ParseRegex(r"[_]*")).map(|(((a,b),c),d)|
-            format!("{}{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c, d)
+            format!("{}{}{}{}", a.unwrap_or_default(), b, c, d)
         ))
         .or((Try(size()) * decimal_base() * z_digit() * ParseRegex(r"[_]*")).map(|(((a,b),c),d)|
-            format!("{}{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c, d)
+            format!("{}{}{}{}", a.unwrap_or_default(), b, c, d)
         ))
 }
 
 /// binary_number ::= [ size ] binary_base binary_value
 fn binary_number() -> impl Parser<Out = String> {
     (Try(size()) * binary_base() * binary_value()).map(|((a,b),c)|
-        format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
+        format!("{}{}{}", a.unwrap_or_default(), b, c)
     )
 }
 
 /// octal_number ::= [ size ] octal_base octal_value
 fn octal_number() -> impl Parser<Out = String> {
     (Try(size()) * octal_base() * octal_value()).map(|((a,b),c)|
-        format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
+        format!("{}{}{}", a.unwrap_or_default(), b, c)
     )
 }
 
 /// hex_number ::= [ size ] hex_base hex_value
 fn hex_number() -> impl Parser<Out = String> {
     (Try(size()) * hex_base() * hex_value()).map(|((a,b),c)|
-        format!("{}{}{}", a.unwrap_or_else(|| "".to_string()), b, c)
+        format!("{}{}{}", a.unwrap_or_default(), b, c)
     )
 }
 

@@ -1,4 +1,4 @@
-
+use crate::verilog::general::ast::Attr;
 
 
 
@@ -36,6 +36,7 @@ pub enum MintypmaxExpression {
 
 pub enum Expression {
     Primary(Primary),
+    Condition((Box<Expression>, Vec<Attr>, Box<Expression>, Box<Expression>)),
 }
 
 pub enum RangeExpression {
