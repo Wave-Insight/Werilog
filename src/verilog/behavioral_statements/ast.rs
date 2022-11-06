@@ -1,4 +1,4 @@
-use crate::verilog::expressions::ast::{VariableLvalue, Expression, NetLvalue};
+use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue}, general::ast::Attr};
 
 
 pub struct BlockAssign(pub VariableLvalue, pub Expression);
@@ -17,3 +17,29 @@ pub enum ProceduralContinuous {
 pub struct VariableAssign(pub VariableLvalue, pub Expression);
 
 pub struct NetAssign(pub NetLvalue, pub Expression);
+
+pub struct Statement {
+    pub attribute: Vec<Attr>,
+    pub item: StatementItem,
+}
+impl Statement {
+    pub fn blocking_assignment(a: (Vec<Attr>, BlockAssign)) -> Self {
+        Self { attribute: a.0, item: StatementItem::BlockAssign(a.1)}
+    }
+}
+pub enum StatementItem {
+    BlockAssign(BlockAssign)
+}
+
+pub struct StatementOrNull {
+    pub attribute: Vec<Attr>,
+    pub item: Option<StatementItem>,
+}
+impl StatementOrNull {
+    pub fn from_statement(s: Statement) -> Self {
+        Self { attribute: s.attribute, item: Some(s.item) }
+    }
+    pub fn from_attr(a: Vec<Attr>) -> Self {
+        Self { attribute: a, item: None }
+    }
+}
