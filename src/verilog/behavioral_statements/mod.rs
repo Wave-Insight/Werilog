@@ -3,3 +3,8 @@ pub mod continuous_assignment;
 pub mod procedural_blocks;
 pub mod parallel_sequential;
 pub mod statements;
+pub mod timing_ctrl;
+pub mod conditional;
+pub mod case;
+pub mod looping;
+pub mod task_enable;

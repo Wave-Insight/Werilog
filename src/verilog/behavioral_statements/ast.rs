@@ -43,3 +43,46 @@ impl StatementOrNull {
         Self { attribute: a, item: None }
     }
 }
+
+// timing ctrl
+
+pub enum EventCtrl {
+    HierarchicalEvent(String),
+    EventExpression(EventExpression),
+    Auto1,
+    Auto2,
+}
+
+pub enum EventExpression {
+    Expression(Expression),
+    Posedge(Expression),
+    Negedge(Expression),
+    Or((Box<EventExpression>, Box<EventExpression>)),
+    And((Box<EventExpression>, Box<EventExpression>)),
+}
+
+// conditional
+pub struct Conditional {
+    pub if_state: Vec<(Expression, StatementOrNull)>,
+    pub else_state: Option<StatementOrNull>,
+}
+
+//case
+pub enum CaseState {
+    Case((Expression, Vec<CaseItem>)),
+    Casez((Expression, Vec<CaseItem>)),
+    Casex((Expression, Vec<CaseItem>)),
+}
+
+pub enum CaseItem {
+    Express((Vec<Expression>, StatementOrNull)),
+    Default(StatementOrNull)
+}
+
+//looping
+pub enum Loop {
+    Forever(Statement),
+    Repeat((Expression, Statement)),
+    While((Expression, Statement)),
+    For((VariableAssign, Expression, VariableAssign, Statement)),
+}
