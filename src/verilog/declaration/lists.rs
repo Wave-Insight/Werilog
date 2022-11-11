@@ -36,7 +36,8 @@ pub fn list_of_net_identifiers() -> impl Parser<Out = Vec<(String, Vec<(Constant
 
 /// list_of_port_identifiers ::= port_identifier { , port_identifier }
 pub fn list_of_port_identifiers() -> impl Parser<Out = Vec<String>> {
-    Many(port_identifier(), Some(","))
+    //TODO:Many(port_identifier(), Some(","))
+    port_identifier().map(|x| vec![x])
 }
 
 /// list_of_real_identifiers ::= real_type { , real_type }

@@ -7,12 +7,13 @@ use crate::verilog::expressions::ast::ConstantExpression;
 
 #[derive(Debug)]
 pub enum OutputDeclaration {
-    Wire((((Option<NetType>, bool), Option<(ConstantExpression, ConstantExpression)>), Vec<String>)),
-    Reg(((bool, Option<(ConstantExpression, ConstantExpression)>), Vec<(String, Option<ConstantExpression>)>)),
+    Wire((((Option<NetType>, bool), Option<Range>), Vec<String>)),
+    Reg(((bool, Option<Range>), Vec<(String, Option<ConstantExpression>)>)),
     Others((OutputVariableType, Vec<(String, Option<ConstantExpression>)>)),
 }
 
-
+#[derive(Debug)]
+pub struct Range(pub ConstantExpression, pub ConstantExpression);
 
 #[derive(Debug)]
 pub enum NetType {

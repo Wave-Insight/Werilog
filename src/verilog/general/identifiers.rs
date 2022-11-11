@@ -153,13 +153,13 @@ pub fn real_identifier() -> impl Parser<Out = String> {
 
 /// simple_identifier ::= [ a-zA-Z_ ] { [ a-zA-Z0-9_$ ] }
 pub fn simple_identifier() -> impl Parser<Out = String> {
-    (ParseRegex(r"[a-zA-Z_]") *
-        Many(ParseRegex(r"[a-zA-Z_0-9\$]"),None)
-            .map(|x| x.into_iter()
-                                    .reduce(|a,b| a+&b)
-                                    .unwrap_or_default())
-    ).map(|x| x.0+&x.1)
-    
+    //(ParseRegex(r"[a-zA-Z_]") *
+    //    Many(ParseRegex(r"[a-zA-Z_0-9\$]"),None)
+    //        .map(|x| x.into_iter()
+    //                                .reduce(|a,b| a+&b)
+    //                                .unwrap_or_default())
+    //).map(|x| x.0+&x.1)
+    ParseRegex(r"[a-zA-Z_][a-zA-Z0-9_\$]*") << white_space()
 }
 
 /// specparam_identifier ::= identifier
@@ -283,5 +283,8 @@ fn test() {
     println!("{:?}", parser.run(input));
     let input = "\\abc123_*%#@\nabc";
     let parser = escaped_identifier();
+    println!("{:?}", parser.run(input));
+    let input = "input_valid";
+    let parser = simple_identifier();
     println!("{:?}", parser.run(input));
 }

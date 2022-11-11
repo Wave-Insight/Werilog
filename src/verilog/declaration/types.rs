@@ -1,8 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::expressions::ast::ConstantExpression;
-
-use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers}, ranges::range, ast::{NetType, OutputDeclaration}};
+use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers}, ranges::range, ast::{NetType, OutputDeclaration, Range}};
 
 // Parameter
 
@@ -39,15 +37,17 @@ pub fn parameter_type<'a>() -> impl Parser<Out = &'a str> {
 // Port
 
 /// inout_declaration ::= inout [ net_type ] [ signed ] [ range ] list_of_port_identifiers
-pub fn inout_declaration() -> impl Parser<Out = (((Option<NetType>, bool), Option<(ConstantExpression, ConstantExpression)>), Vec<String>)> {
-    (token("inout") >> Try(net_type())) * Try(token("signed")).map(|x| x.is_some())
-        * Try(range()) * list_of_port_identifiers()
+pub fn inout_declaration() -> impl Parser<Out = (Option<NetType>, bool, Option<Range>, Vec<String>)> {
+    ((token("inout") >> Try(net_type())) * Try(token("signed")).map(|x| x.is_some())
+        * Try(range()) * list_of_port_identifiers())
+        .map(|x| (x.0.0.0, x.0.0.1, x.0.1, x.1))
 }
 
 /// input_declaration ::= input [ net_type ] [ signed ] [ range ] list_of_port_identifiers
-pub fn input_declaration() -> impl Parser<Out = (((Option<NetType>, bool), Option<(ConstantExpression, ConstantExpression)>), Vec<String>)> {
-    (token("input") >> Try(net_type())) * Try(token("signed")).map(|x| x.is_some())
-        * Try(range()) * list_of_port_identifiers()
+pub fn input_declaration() -> impl Parser<Out = (Option<NetType>, bool, Option<Range>, Vec<String>)> {
+    ((token("input") >> Try(net_type())) * Try(token("signed")).map(|x| x.is_some())
+        * Try(range()) * list_of_port_identifiers())
+        .map(|x| (x.0.0.0, x.0.0.1, x.0.1, x.1))
 }
 
 /// output_declaration ::=
@@ -116,4 +116,6 @@ pub fn time_declaration() -> impl Parser<Out = String> {
 fn test() {
     println!("{:?}", inout_declaration().run("inout [5:0] signal_inout"));
     println!("{:?}", input_declaration().run("input signed [7:0] signal_input"));
+    println!("{:?}", input_declaration().run("input signed       signal_input"));
+    println!("{:?}", input_declaration().run("input              signal_input"));
 }
