@@ -42,3 +42,19 @@ pub enum OutputVariableType {
     Time,
 }
 
+#[derive(Debug)]
+pub enum NetDeclaration {
+    Simple(NetType, bool, Vec<(String, Vec<Range>)>),
+}
+
+#[derive(Debug)]
+pub enum RealDeclaration {
+    Dimension(String, Vec<Range>),
+    ConstExp(String, ConstantExpression),
+}
+
+#[derive(Debug)]
+pub enum VariableDeclaration {
+    Dimension(String, Vec<Range>),
+    ConstExp(String, ConstantExpression),
+}

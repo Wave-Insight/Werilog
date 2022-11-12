@@ -1,5 +1,5 @@
 
-use crate::verilog::{general::ast::Attr, declaration::ast::{NetType, Range, OutputDeclaration, ParameterDeclaration}, expressions::ast::ConstantRangeExpression};
+use crate::verilog::{general::ast::Attr, declaration::ast::{NetType, Range, OutputDeclaration, ParameterDeclaration, NetDeclaration, VariableDeclaration, RealDeclaration}, expressions::ast::ConstantRangeExpression, behavioral_statements::ast::NetAssign};
 
 
 
@@ -11,6 +11,7 @@ use crate::verilog::{general::ast::Attr, declaration::ast::{NetType, Range, Outp
 #[derive(Debug)]
 pub enum ModuleDeclaration {
     Ports(Vec<Attr>, String, Option<Vec<ParameterDeclaration>>, Vec<Port>, Vec<ModuleItem>),
+    NonPorts(Vec<Attr>, String, Option<Vec<ParameterDeclaration>>, Option<Vec<PortDeclaration>>, Vec<NonPortModuleItem>),
 }
 
 
@@ -35,4 +36,28 @@ pub enum PortDeclaration {
 #[derive(Debug)]
 pub enum ModuleItem {
     PortDeclaration(PortDeclaration),
+}
+
+#[derive(Debug)]
+pub enum ModuleGenetateItem {
+    ModuleItemDeclaration(Vec<Attr>, ModuleItemDeclaration),
+
+
+    ContinuousAssign(Vec<Attr>, Vec<NetAssign>),
+}
+
+#[derive(Debug)]
+pub enum ModuleItemDeclaration {
+    Net(NetDeclaration),
+    Reg(bool, Option<Range>, Vec<VariableDeclaration>),
+    Integer(Vec<VariableDeclaration>),
+    Real(Vec<RealDeclaration>),
+    RealTime(Vec<RealDeclaration>),
+    Event(Vec<(String, Vec<Range>)>),
+}
+
+#[derive(Debug)]
+pub enum NonPortModuleItem {
+    ModuleGenetateItem(ModuleGenetateItem),
+
 }

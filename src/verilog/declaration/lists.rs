@@ -1,8 +1,8 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::identifiers::{net_identifier, port_identifier}, expressions::{ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression}, expressions::constant_expression}};
+use crate::verilog::{general::identifiers::{net_identifier, port_identifier, event_identifier}, expressions::{ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression}, expressions::constant_expression}};
 
-use super::{ranges::dimension, assignments::param_assignment};
+use super::{ranges::dimension, assignments::param_assignment, ast::{Range, VariableDeclaration, RealDeclaration}, data_types::{variable_type, real_type}};
 
 
 /// list_of_defparam_assignments ::= defparam_assignment { , defparam_assignment }
@@ -12,10 +12,9 @@ use super::{ranges::dimension, assignments::param_assignment};
 //}
 
 /// list_of_event_identifiers ::= event_identifier { dimension } { , event_identifier { dimension } }
-// TODO
-//pub fn list_of_event_identifiers() -> impl Parser<Out = String> {
-//    event_identifier()Many(dimension())Many(Token(",")event_identifier()Many(dimension()))
-//}
+pub fn list_of_event_identifiers() -> impl Parser<Out = Vec<(String, Vec<Range>)>> {
+    Many(event_identifier().zip(Many(dimension(), None)), Some(","))
+}
 
 /// list_of_net_decl_assignments ::= net_decl_assignment { , net_decl_assignment }
 // TODO
@@ -24,7 +23,7 @@ use super::{ranges::dimension, assignments::param_assignment};
 //}
 
 /// list_of_net_identifiers ::= net_identifier { dimension } { , net_identifier { dimension } }
-pub fn list_of_net_identifiers() -> impl Parser<Out = Vec<(String, Vec<(ConstantExpression, ConstantExpression)>)>> {
+pub fn list_of_net_identifiers() -> impl Parser<Out = Vec<(String, Vec<Range>)>> {
     Many(net_identifier().zip(Many(dimension(), None)), Some(","))
 }
 
@@ -40,10 +39,9 @@ pub fn list_of_port_identifiers() -> impl Parser<Out = Vec<String>> {
 }
 
 /// list_of_real_identifiers ::= real_type { , real_type }
-// TODO
-//pub fn list_of_real_identifiers() -> impl Parser<Out = String> {
-//    Many(real_type(), Some(","))
-//}
+pub fn list_of_real_identifiers() -> impl Parser<Out = Vec<RealDeclaration>> {
+    Many(real_type(), Some(","))
+}
 
 /// list_of_specparam_assignments ::= specparam_assignment { , specparam_assignment }
 // TODO
@@ -52,10 +50,9 @@ pub fn list_of_port_identifiers() -> impl Parser<Out = Vec<String>> {
 //}
 
 /// list_of_variable_identifiers ::= variable_type { , variable_type }
-// TODO
-//pub fn list_of_variable_identifiers() -> impl Parser<Out = String> {
-//    Many(variable_type(), Some(","))
-//}
+pub fn list_of_variable_identifiers() -> impl Parser<Out = Vec<VariableDeclaration>> {
+    Many(variable_type(), Some(","))
+}
 
 /// list_of_variable_port_identifiers ::= port_identifier [ = constant_expression ] { , port_identifier [ = constant_expression ] }
 pub fn list_of_variable_port_identifiers() -> impl Parser<Out = Vec<(String, Option<ConstantExpression>)>> {

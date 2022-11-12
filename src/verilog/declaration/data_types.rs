@@ -30,22 +30,26 @@ pub fn output_variable_type() -> impl Parser<Out = OutputVariableType> {
     token("integer").map(|_| OutputVariableType::Integer)
         | token("time").map(|_| OutputVariableType::Time)
 }
-/* TODO
+
 /// real_type ::=
 ///     real_identifier { dimension }
 ///   | real_identifier = constant_expression
-pub fn real_type() -> impl Parser<Out = String> {
+pub fn real_type() -> impl Parser<Out = RealDeclaration> {
     (real_identifier().zip(Many(dimension(), None)))
+        .map(|x| RealDeclaration::Dimension(x.0, x.1))
         | ((real_identifier().left(token("="))) * constant_expression())
+            .map(|x| RealDeclaration::ConstExp(x.0, x.1))
 }
 
 /// variable_type ::=
 ///     variable_identifier { dimension }
 ///   | variable_identifier = constant_expression
-pub fn variable_type() -> impl Parser<Out = String> {
-    (variable_identifier().zip(Many(dimension(), None))
+pub fn variable_type() -> impl Parser<Out = VariableDeclaration> {
+    (variable_identifier().zip(Many(dimension(), None)))
+        .map(|x| VariableDeclaration::Dimension(x.0, x.1))
         | (variable_identifier().left(token("=")) * constant_expression())
-}*/
+            .map(|x| VariableDeclaration::ConstExp(x.0, x.1))
+}
 
 // Strengths
 

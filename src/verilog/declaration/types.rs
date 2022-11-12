@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers, list_of_param_assignments}, ranges::range, ast::{NetType, OutputDeclaration, Range, ParameterDeclaration}};
+use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers, list_of_param_assignments, list_of_event_identifiers, list_of_variable_identifiers, list_of_real_identifiers, list_of_net_identifiers}, ranges::range, ast::{NetType, OutputDeclaration, Range, ParameterDeclaration, VariableDeclaration, RealDeclaration, NetDeclaration}};
 
 // Parameter
 
@@ -75,44 +75,65 @@ pub fn output_declaration() -> impl Parser<Out = OutputDeclaration> {
 }
 
 // Type
-/*
+
 /// event_declaration ::= event list_of_event_identifiers ;
-// TODO
-//pub fn event_declaration() -> impl Parser<Out = String> {
-//    token("event") >> list_of_event_identifiers() << token(";")
-//}
+pub fn event_declaration() -> impl Parser<Out = Vec<(String, Vec<Range>)>> {
+    token("event") >> list_of_event_identifiers() << token(";")
+}
 
 /// integer_declaration ::= integer list_of_variable_identifiers ;
-pub fn integer_declaration() -> impl Parser<Out = String> {
+pub fn integer_declaration() -> impl Parser<Out = Vec<VariableDeclaration>> {
     token("integer") >> list_of_variable_identifiers() << token(";")
 }
 
 /// net_declaration ::=
-pub fn net_declaration() -> impl Parser<Out = String> {
-    net_type()Try(signed())Try(delay3())list_of_net_identifiers()Token(";")net_type()Try(drive_strength())Try(signed())Try(delay3())list_of_net_decl_assignments()Token(";")
-.or(net_type()Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_identifiers()Token(";")   
-.or(net_type()Try(drive_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_decl_assignments()Token(";")
-.or(trireg()Try(charge_strength())Try(signed())Try(delay3())list_of_net_identifiers()Token(";")
-.or(trireg()Try(drive_strength())Try(signed())Try(delay3())list_of_net_decl_assignments()Token(";")
-.or(trireg()Try(charge_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_identifiers()Token(";")
-.or(trireg()Try(drive_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_decl_assignments()Token(";")
+///     net_type [ signed ]
+///     [ delay3 ] list_of_net_identifiers ;
+///   | net_type [ drive_strength ] [ signed ]
+///     [ delay3 ] list_of_net_decl_assignments ;
+///   | net_type [ vectored | scalared ] [ signed ]
+///     range [ delay3 ] list_of_net_identifiers ;
+///   | net_type [ drive_strength ] [ vectored | scalared ] [ signed ]
+///     range [ delay3 ] list_of_net_decl_assignments ;
+///   | trireg [ charge_strength ] [ signed ]
+///     [ delay3 ] list_of_net_identifiers ;
+///   | trireg [ drive_strength ] [ signed ]
+///     [ delay3 ] list_of_net_decl_assignments ;
+///   | trireg [ charge_strength ] [ vectored | scalared ] [ signed ]
+///     range [ delay3 ] list_of_net_identifiers ;
+///   | trireg [ drive_strength ] [ vectored | scalared ] [ signed ]
+///     range [ delay3 ] list_of_net_decl_assignments ; 
+pub fn net_declaration() -> impl Parser<Out = NetDeclaration> {
+    (net_type().zip(Try(token("signed")).map(|x| x.is_some()))
+        //TODO * Try(delay3())
+        * list_of_net_identifiers().left(token(";")))
+        .map(|x| NetDeclaration::Simple(x.0.0, x.0.1, x.1))
+        //| (net_type().zip(Try(drive_strength())) * Try(signed())
+        //    * Try(delay3()) * list_of_net_decl_assignments() << token(";"))
+        //| (net_type().zip(Try(vectored() | scalared()))Try(signed())range()Try(delay3())list_of_net_identifiers()Token(";")   )
+        //| (net_type()Try(drive_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_decl_assignments()Token(";"))
+        //| (trireg()Try(charge_strength())Try(signed())Try(delay3())list_of_net_identifiers()Token(";"))
+        //| (trireg()Try(drive_strength())Try(signed())Try(delay3())list_of_net_decl_assignments()Token(";"))
+        //| (trireg()Try(charge_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_identifiers()Token(";"))
+        //| (trireg()Try(drive_strength())Try(vectored() | scalared())Try(signed())range()Try(delay3())list_of_net_decl_assignments()Token(";"))
 }
 
 /// real_declaration ::= real list_of_real_identifiers ;
-pub fn real_declaration() -> impl Parser<Out = String> {
-    real()list_of_real_identifiers()Token(";")
+pub fn real_declaration() -> impl Parser<Out = Vec<RealDeclaration>> {
+    token("real") >> list_of_real_identifiers() << token(";")
 }
 
 /// realtime_declaration ::= realtime list_of_real_identifiers ;
-pub fn realtime_declaration() -> impl Parser<Out = String> {
-    realtime()list_of_real_identifiers()Token(";")
+pub fn realtime_declaration() -> impl Parser<Out = Vec<RealDeclaration>> {
+    token("realtime") >> list_of_real_identifiers() << token(";")
 }
 
 /// reg_declaration ::= reg [ signed ] [ range ] list_of_variable_identifiers ;
-pub fn reg_declaration() -> impl Parser<Out = String> {
-    reg()Try(signed())Try(range())list_of_variable_identifiers()Token(";")
+pub fn reg_declaration() -> impl Parser<Out = ((bool, Option<Range>), Vec<VariableDeclaration>)> {
+    (token("reg") >> Try(token("signed")).map(|x| x.is_some()))
+        * Try(range()) * (list_of_variable_identifiers().left(token(";")))
 }
-
+/*TODO
 /// time_declaration ::= time list_of_variable_identifiers ;
 pub fn time_declaration() -> impl Parser<Out = String> {
     time()list_of_variable_identifiers()Token(";")Token("")

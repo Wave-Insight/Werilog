@@ -16,6 +16,7 @@ pub enum ProceduralContinuous {
 
 pub struct VariableAssign(pub VariableLvalue, pub Expression);
 
+#[derive(Debug)]
 pub struct NetAssign(pub NetLvalue, pub Expression);
 
 pub struct Statement {
