@@ -1,8 +1,14 @@
-use crate::verilog::expressions::ast::ConstantExpression;
+use crate::verilog::expressions::ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression};
 
 
-
-
+#[derive(Debug)]
+pub enum ParameterDeclaration {
+    Notype(bool, Option<Range>, Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+    Integer(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+    Real(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+    Realtime(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+    Time(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+}
 
 
 #[derive(Debug)]

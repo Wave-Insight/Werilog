@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers}, ranges::range, ast::{NetType, OutputDeclaration, Range}};
+use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_identifiers, list_of_variable_port_identifiers, list_of_param_assignments}, ranges::range, ast::{NetType, OutputDeclaration, Range, ParameterDeclaration}};
 
 // Parameter
 
@@ -16,11 +16,17 @@ use super::{data_types::{net_type, output_variable_type}, lists::{list_of_port_i
 /// parameter_declaration ::=
 ///  parameter [ signed ] [ range ] list_of_param_assignments
 ///  | parameter parameter_type list_of_param_assignments
-// TODO
-//pub fn parameter_declaration() -> impl Parser<Out = String> {
-//    (token("parameter").zip(Try(token("signed"))) * Try(range()) * list_of_param_assignments())
-//        | (token("parameter") * parameter_type() * list_of_param_assignments())
-//}
+pub fn parameter_declaration() -> impl Parser<Out = ParameterDeclaration> {
+    ((token("parameter") >> Try(token("signed")).map(|x| x.is_some())) * Try(range()) * list_of_param_assignments())
+        .map(|x| ParameterDeclaration::Notype(x.0.0, x.0.1, x.1))
+        | ((token("parameter") >> parameter_type()) * list_of_param_assignments())
+            .map(|(ptype, x)| match ptype {
+                "integer" => ParameterDeclaration::Integer(x),
+                "real" => ParameterDeclaration::Real(x),
+                "realtime" => ParameterDeclaration::Realtime(x),
+                _ => ParameterDeclaration::Time(x),
+            })
+}
 
 /// specparam_declaration ::= specparam [ range ] list_of_specparam_assignments ;
 // TODO
