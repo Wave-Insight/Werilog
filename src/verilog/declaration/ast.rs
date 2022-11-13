@@ -45,6 +45,8 @@ pub enum OutputVariableType {
 #[derive(Debug)]
 pub enum NetDeclaration {
     Simple(NetType, bool, Vec<(String, Vec<Range>)>),
+
+    Range(NetType, Option<bool>, bool, Range, Vec<(String, Vec<Range>)>),
 }
 
 #[derive(Debug)]
