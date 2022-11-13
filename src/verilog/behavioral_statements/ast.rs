@@ -1,6 +1,6 @@
 use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue}, general::ast::Attr};
 
-
+#[derive(Debug)]
 pub struct BlockAssign(pub VariableLvalue, pub Expression);
 
 pub struct NonBlockAssign(pub VariableLvalue, pub Expression);
@@ -19,19 +19,31 @@ pub struct VariableAssign(pub VariableLvalue, pub Expression);
 #[derive(Debug)]
 pub struct NetAssign(pub NetLvalue, pub Expression);
 
+#[derive(Debug)]
 pub struct Statement {
     pub attribute: Vec<Attr>,
     pub item: StatementItem,
 }
 impl Statement {
     pub fn blocking_assignment(a: (Vec<Attr>, BlockAssign)) -> Self {
-        Self { attribute: a.0, item: StatementItem::BlockAssign(a.1)}
+        Self { attribute: a.0, item: StatementItem::BlockAssign(a.1) }
+    }
+    pub fn case_statement(a: (Vec<Attr>, CaseState)) -> Self {
+        Self { attribute: a.0, item: StatementItem::CaseStatement(a.1) }
+    }
+    pub fn conditional_statement(a: (Vec<Attr>, Conditional)) -> Self {
+        Self { attribute: a.0, item: StatementItem::ConditionalStatement(a.1) }
     }
 }
+
+#[derive(Debug)]
 pub enum StatementItem {
-    BlockAssign(BlockAssign)
+    BlockAssign(BlockAssign),
+    CaseStatement(CaseState),
+    ConditionalStatement(Conditional),
 }
 
+#[derive(Debug)]
 pub struct StatementOrNull {
     pub attribute: Vec<Attr>,
     pub item: Option<StatementItem>,
@@ -63,18 +75,21 @@ pub enum EventExpression {
 }
 
 // conditional
+#[derive(Debug)]
 pub struct Conditional {
     pub if_state: Vec<(Expression, StatementOrNull)>,
-    pub else_state: Option<StatementOrNull>,
+    pub else_state: Option<Box<StatementOrNull>>,
 }
 
 //case
+#[derive(Debug)]
 pub enum CaseState {
     Case((Expression, Vec<CaseItem>)),
     Casez((Expression, Vec<CaseItem>)),
     Casex((Expression, Vec<CaseItem>)),
 }
 
+#[derive(Debug)]
 pub enum CaseItem {
     Express((Vec<Expression>, StatementOrNull)),
     Default(StatementOrNull)

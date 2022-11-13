@@ -1,5 +1,5 @@
 
-use crate::verilog::{general::ast::Attr, declaration::ast::{NetType, Range, OutputDeclaration, ParameterDeclaration, NetDeclaration, VariableDeclaration, RealDeclaration}, expressions::ast::ConstantRangeExpression, behavioral_statements::ast::NetAssign};
+use crate::verilog::{general::ast::Attr, declaration::ast::{NetType, Range, OutputDeclaration, ParameterDeclaration, NetDeclaration, VariableDeclaration, RealDeclaration}, expressions::ast::ConstantRangeExpression, behavioral_statements::ast::{NetAssign, Statement}};
 
 
 
@@ -44,6 +44,11 @@ pub enum ModuleGenetateItem {
 
 
     ContinuousAssign(Vec<Attr>, Vec<NetAssign>),
+
+
+
+    Initial(Vec<Attr>, Statement),
+    Always(Vec<Attr>, Statement),
 }
 
 #[derive(Debug)]

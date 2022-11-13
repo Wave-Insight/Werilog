@@ -25,3 +25,10 @@ pub fn net_assignment() -> impl Parser<Out = NetAssign> {
         .map(|(a,b)| NetAssign(a, b))
 }
 
+#[test]
+fn test() {
+    let input = "_zz_Tout_getTAU_SboxOut_5 = 1'b1;";
+    println!("{:?}", net_assignment().run_with_out(input, Location::new()));
+    let input = "assign _zz_Tout_getTAU_SboxOut_5 = 1'b1;";
+    println!("{:?}", continuous_assign().run_with_out(input, Location::new()));
+}

@@ -1,4 +1,6 @@
 use parser_rust_simple::prelude::*;
+use crate::verilog::expressions::expressions::constant_expression;
+
 use super::white_space::white_space;
 
 /// block_identifier ::= identifier
@@ -63,12 +65,14 @@ pub fn hierarchical_function_identifier() -> impl Parser<Out = String> {
 
 /// hierarchical_identifier ::= { identifier [ [ constant_expression ] ] . } identifier
 pub fn hierarchical_identifier() -> impl Parser<Out = String> {
-    (Many( identifier()//TODO: * Try( Token("[") * constant_expression() * Token("]")  )
-        .zip(Token(".")).map(|x| format!("{}{}", x.0, x.1)),
-        None
-    ).map(|x| x.into_iter().reduce(|a,b| a+&b).unwrap())//TODO:unwrap()
-    * identifier())
-    .map(|x| format!("{}{}", x.0, x.1))
+    //TODO
+    //(Many( identifier().zip(Try( token("[") >> constant_expression() << token("]")  ))
+    //    .zip(token(".")).map(|x| format!("{}{}", x.0, x.1)),
+    //    None
+    //).map(|x| x.into_iter().reduce(|a,b| a+&b).unwrap())//TODO:unwrap()
+    //* identifier())
+    //.map(|x| format!("{}{}", x.0, x.1))
+    identifier()
 }
 
 /// hierarchical_net_identifier ::= hierarchical_identifier

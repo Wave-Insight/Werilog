@@ -2,7 +2,7 @@ use parser_rust_simple::prelude::*;
 
 use crate::verilog::general::attributes::attribute_instance;
 
-use super::{procedural_blocks::blocking_assignment, ast::{Statement, StatementOrNull}};
+use super::{procedural_blocks::blocking_assignment, ast::{Statement, StatementOrNull}, case::case_statement, conditional::conditional_statement};
 
 /// statement ::=
 ///    { attribute_instance } blocking_assignment ;
@@ -23,8 +23,10 @@ pub fn statement() -> impl Parser<Out = Statement> {
     ((Many(attribute_instance(), None) * blocking_assignment()) << token(";"))
         .map(Statement::blocking_assignment)
         //TODO
-        //| (Many(attribute_instance()) * case_statement())
-        //| (Many(attribute_instance()) * conditional_statement())
+        | (Many(attribute_instance(), None) * tobox!(case_statement()))
+            .map(Statement::case_statement)
+        | (Many(attribute_instance(), None) * conditional_statement())
+            .map(Statement::conditional_statement)
         /*.or(Many(attribute_instance()) * disable_statement())
         .or(Many(attribute_instance()) * event_trigger())
         .or(Many(attribute_instance()) * loop_statement())

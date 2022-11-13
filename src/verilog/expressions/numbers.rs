@@ -3,10 +3,10 @@ use super::ast::*;
 
 /// number ::= decimal_number | octal_number | binary_number | hex_number | real_number
 pub fn number() -> impl Parser<Out = Number> {
-    decimal_number().map(Number::Decimal)
-        | octal_number().map(Number::Octal)
+    octal_number().map(Number::Octal)
         | binary_number().map(Number::Binary)
         | hex_number().map(Number::Hex)
+        | decimal_number().map(Number::Decimal)
         | real_number().map(Number::Real)
 }
 
@@ -22,8 +22,7 @@ pub fn real_number() -> impl Parser<Out = String> {
 
 /// decimal_number ::= unsigned_number | [ size ] decimal_base unsigned_number | [ size ] decimal_base x_digit { _ } | [ size ] decimal_base z_digit { _ }
 fn decimal_number() -> impl Parser<Out = String> {
-    unsigned_number()
-        .or((Try(size()) * decimal_base() * unsigned_number()).map(|((a,b),c)|
+    ((Try(size()) * decimal_base() * unsigned_number()).map(|((a,b),c)|
             format!("{}{}{}", a.unwrap_or_default(), b, c)
         ))
         .or((Try(size()) * decimal_base() * x_digit() * ParseRegex(r"[_]*")).map(|(((a,b),c),d)|
@@ -32,6 +31,7 @@ fn decimal_number() -> impl Parser<Out = String> {
         .or((Try(size()) * decimal_base() * z_digit() * ParseRegex(r"[_]*")).map(|(((a,b),c),d)|
             format!("{}{}{}{}", a.unwrap_or_default(), b, c, d)
         ))
+        .or(unsigned_number())
 }
 
 /// binary_number ::= [ size ] binary_base binary_value
@@ -67,7 +67,7 @@ fn size() -> impl Parser<Out = String> {
 
 /// non_zero_unsigned_number ::= non_zero_decimal_digit { _ | decimal_digit }
 fn non_zero_unsigned_number() -> impl Parser<Out = String> {
-    ParseRegex(r"[1-9][1-9_]")
+    ParseRegex(r"[1-9][0-9_]*")
 }
 
 /// unsigned_number ::= decimal_digit { _ | decimal_digit }
@@ -188,4 +188,8 @@ fn test() {
     let input = r"'sh";
     let parser = hex_base();
     println!("{:?}", parser.run(input));
+    let input = r"'b";
+    println!("{:?}", binary_base().run_with_out(input, Location::new()));
+    let input = r"1'b1";
+    println!("{:?}", binary_number().run_with_out(input, Location::new()));
 }

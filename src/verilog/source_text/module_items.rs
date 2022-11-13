@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::attributes::attribute_instance, behavioral_statements::continuous_assignment::continuous_assign, declaration::types::{reg_declaration, integer_declaration, real_declaration, realtime_declaration, event_declaration, net_declaration}};
+use crate::verilog::{general::attributes::attribute_instance, behavioral_statements::{continuous_assignment::continuous_assign, procedural_blocks::{initial_construct, always_construct}}, declaration::types::{reg_declaration, integer_declaration, real_declaration, realtime_declaration, event_declaration, net_declaration}};
 
 use super::{module_parameters_ports::port_declaration, ast::{ModuleItem, ModuleItemDeclaration, ModuleGenetateItem, NonPortModuleItem}};
 
@@ -36,8 +36,10 @@ pub fn module_or_generate_item() -> impl Parser<Out = ModuleGenetateItem> {
         //| (Many(attribute_instance(), None) * gate_instantiation())
         //TODO| (Many(attribute_instance(), None) * udp_instantiation())
         //TODO| (Many(attribute_instance(), None) * module_instantiation())
-        //TODO| (Many(attribute_instance(), None) * initial_construct())
-        //TODO| (Many(attribute_instance(), None) * always_construct())
+        | (Many(attribute_instance(), None) * initial_construct())
+            .map(|x| ModuleGenetateItem::Initial(x.0, x.1))
+        | (Many(attribute_instance(), None) * always_construct())
+            .map(|x| ModuleGenetateItem::Always(x.0, x.1))
         //TODO| (Many(attribute_instance(), None) * loop_generate_construct())
         //TODO| (Many(attribute_instance(), None) * conditional_generate_construct())
 }
