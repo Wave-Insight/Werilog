@@ -4,7 +4,7 @@ use crate::verilog::expressions::{
     expression_left_side_values::{variable_lvalue, net_lvalue},
     expressions::expression
 };
-use super::{continuous_assignment::net_assignment, statements::statement, ast::Statement};
+use super::{continuous_assignment::net_assignment, statements::statement, ast::Statement, timing_ctrl::delay_or_event_control};
 use super::ast::{BlockAssign, NonBlockAssign, VariableAssign, ProceduralContinuous};
 
 /// initial_construct ::= initial statement
@@ -20,17 +20,17 @@ pub fn always_construct() -> impl Parser<Out = Statement> {
 /// blocking_assignment ::= variable_lvalue = [ delay_or_event_control ] expression
 pub fn blocking_assignment() -> impl Parser<Out = BlockAssign> {
     (variable_lvalue().left(whitespace())
-        * (token("=") >>
-        //Try(delay_or_event_control()) *   ////TODO
-        expression())).map(|(a,b)| BlockAssign(a, b))
+        * (token("=")
+        >> Try(delay_or_event_control()))
+        * expression()).map(|((a, b), c)| BlockAssign(a, b, c))
 }
 
 /// nonblocking_assignment ::= variable_lvalue <= [ delay_or_event_control ] expression
 pub fn nonblocking_assignment() -> impl Parser<Out = NonBlockAssign> {
     (variable_lvalue().left(whitespace())
-        * (token("<=") >>
-        //Try(delay_or_event_control()) *    ////TODO
-        expression())).map(|(a,b)| NonBlockAssign(a, b))
+        * (token("<=")
+        >> Try(delay_or_event_control()))
+        * expression()).map(|((a, b), c)| NonBlockAssign(a, b, c))
 }
 
 /// procedural_continuous_assignments ::=

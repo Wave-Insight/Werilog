@@ -102,9 +102,6 @@ fn test() {
   assign _zz_Tout_getTAU_SboxOut_6 = 1'b1;
   assign _zz_Tout_getTAU_SboxOut_7 = 1'b1;
   assign _zz_Tout_getTAU_SboxOut_8 = 1'b1;
-  initial begin
-    $readmemb("toptest.v_toplevel_enc_getK_64_Tout_getTAU_Sbox.bin",Tout_getTAU_Sbox);
-  end
   always @(posedge clk) begin
     if(_zz_Tout_getTAU_SboxOut_5) begin
       _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox[_zz_Tout_getTAU_SboxOut_1];

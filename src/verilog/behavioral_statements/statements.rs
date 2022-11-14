@@ -2,7 +2,7 @@ use parser_rust_simple::prelude::*;
 
 use crate::verilog::general::attributes::attribute_instance;
 
-use super::{procedural_blocks::blocking_assignment, ast::{Statement, StatementOrNull}, case::case_statement, conditional::conditional_statement};
+use super::{procedural_blocks::{blocking_assignment, procedural_continuous_assignments, nonblocking_assignment}, ast::{Statement, StatementOrNull}, case::case_statement, conditional::conditional_statement, parallel_sequential::seq_block, timing_ctrl::procedural_timing_control_statement, looping::loop_statement};
 
 /// statement ::=
 ///    { attribute_instance } blocking_assignment ;
@@ -28,14 +28,19 @@ pub fn statement() -> impl Parser<Out = Statement> {
         | (Many(attribute_instance(), None) * conditional_statement())
             .map(Statement::conditional_statement)
         /*.or(Many(attribute_instance()) * disable_statement())
-        .or(Many(attribute_instance()) * event_trigger())
-        .or(Many(attribute_instance()) * loop_statement())
-        .or(Many(attribute_instance()) * nonblocking_assignment()token(";"))
-        .or(Many(attribute_instance()) * par_block())
-        .or(Many(attribute_instance()) * procedural_continuous_assignments()token(";"))
-        .or(Many(attribute_instance()) * procedural_timing_control_statement())
-        .or(Many(attribute_instance()) * seq_block())
-        .or(Many(attribute_instance()) * system_task_enable())
+        .or(Many(attribute_instance()) * event_trigger())*/
+        | (Many(attribute_instance(), None) * tobox!(loop_statement()))
+            .map(Statement::loop_statement)
+        | (Many(attribute_instance(), None) * (nonblocking_assignment().left(token(";"))))
+            .map(Statement::nonblocking_assignment)
+        //.or(Many(attribute_instance()) * par_block())
+        | (Many(attribute_instance(), None) * (procedural_continuous_assignments().left(token(";"))))
+            .map(Statement::procedural_continuous_assignments)
+        | (Many(attribute_instance(), None) * tobox!(procedural_timing_control_statement()))
+            .map(Statement::procedural_timing_control_statement)
+        | (Many(attribute_instance(), None) * tobox!(seq_block()))
+            .map(Statement::seq_block)
+        /*.or(Many(attribute_instance()) * system_task_enable())
         .or(Many(attribute_instance()) * task_enable())
         .or(Many(attribute_instance()) * wait_statement())*/
 }

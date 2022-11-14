@@ -1,5 +1,20 @@
-use crate::verilog::expressions::ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression};
+use crate::verilog::{expressions::ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression}, general::ast::Attr};
 
+
+#[derive(Debug)]
+pub enum Delay3 {
+    Value(String),
+    Expr1(ConstantOrNot<MintypmaxExpression>),
+    Expr2(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
+    Expr3(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
+}
+
+#[derive(Debug)]
+pub enum Delay2 {
+    Value(String),
+    Expr1(ConstantOrNot<MintypmaxExpression>),
+    Expr2(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
+}
 
 #[derive(Debug)]
 pub enum ParameterDeclaration {
@@ -59,4 +74,15 @@ pub enum RealDeclaration {
 pub enum VariableDeclaration {
     Dimension(String, Vec<Range>),
     ConstExp(String, ConstantExpression),
+}
+
+// block item
+#[derive(Debug)]
+pub enum BlockItemDeclaration {
+    Reg(Vec<Attr>, bool, Option<Range>, Vec<(String, Vec<Range>)>),
+    Integer(Vec<Attr>, Vec<(String, Vec<Range>)>),
+    Time(Vec<Attr>, Vec<(String, Vec<Range>)>),
+    Real(Vec<Attr>, Vec<(String, Vec<Range>)>),
+    Realtime(Vec<Attr>, Vec<(String, Vec<Range>)>),
+    Event(Vec<Attr>, Vec<(String, Vec<Range>)>),
 }

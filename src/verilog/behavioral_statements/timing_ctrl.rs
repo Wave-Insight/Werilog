@@ -1,28 +1,27 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::identifiers::hierarchical_event_identifier, expressions::{expressions::expression, ast::Expression}};
+use crate::verilog::{general::identifiers::hierarchical_event_identifier, expressions::{expressions::{expression, mintypmax_expression}, ast::Expression}, declaration::data_types::delay_value};
 
-use super::{ast::{EventCtrl, EventExpression, StatementOrNull}, statements::statement_or_null};
+use super::{ast::{EventCtrl, EventExpression, StatementOrNull, DelayOrEventCtrl, DelayCtrl, ProceduralTimingCtrl}, statements::statement_or_null};
 
 /// delay_control ::=
 ///    # delay_value
 ///  | # ( mintypmax_expression )
-// TODO:
-//pub fn delay_control() -> impl Parser<Out = String> {
-//    token("#") >> delay_value()
-//        | token("#") >> token("(") >> mintypmax_expression() << token(")")
-//}
+pub fn delay_control() -> impl Parser<Out = DelayCtrl> {
+    token("#") >> delay_value().map(DelayCtrl::Value)
+        | token("#") >> token("(") >> mintypmax_expression().map(DelayCtrl::Expr) << token(")")
+}
 
 /// delay_or_event_control ::=
 ///    delay_control
 ///  | event_control
 ///  | repeat ( expression ) event_control
-// TODO:
-//pub fn delay_or_event_control() -> impl Parser<Out = String> {
-//    delay_control()
-//        .or(event_control())
-//        .or(token("repeat") >> token("(") >> expression() << token(")") * event_control())
-//}
+pub fn delay_or_event_control() -> impl Parser<Out = DelayOrEventCtrl> {
+    delay_control().map(DelayOrEventCtrl::Delay)
+        | event_control().map(DelayOrEventCtrl::Event)
+        | ((token("repeat") >> token("(") >> expression() << token(")")) * event_control())
+            .map(|x| DelayOrEventCtrl::Repeat(x.0, x.1))
+}
 
 /// disable_statement ::=
 ///     disable hierarchical_task_identifier ;
@@ -71,18 +70,16 @@ pub fn event_expression() -> impl Parser<Out = EventExpression> {
 /// procedural_timing_control ::=
 ///     delay_control
 ///   | event_control
-// TODO
-//pub fn procedural_timing_control() -> impl Parser<Out = String> {
-//    delay_control()
-//        | event_control()
-//}
+pub fn procedural_timing_control() -> impl Parser<Out = ProceduralTimingCtrl> {
+    delay_control().map(ProceduralTimingCtrl::Delay)
+        | event_control().map(ProceduralTimingCtrl::Event)
+}
 
 /// procedural_timing_control_statement ::=
 ///   procedural_timing_control statement_or_null
-// TODO
-//pub fn procedural_timing_control_statement() -> impl Parser<Out = String> {
-//    procedural_timing_control() * statement_or_null()
-//}
+pub fn procedural_timing_control_statement() -> impl Parser<Out = (ProceduralTimingCtrl, StatementOrNull)> {
+    procedural_timing_control().zip(statement_or_null())
+}
 
 /// wait_statement ::=
 ///   wait ( expression ) statement_or_null 

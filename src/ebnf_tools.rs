@@ -12,7 +12,7 @@ macro_rules! head {
 
 macro_rules! things {
     () => {(
-        Many(
+        (Many(
             (identifier().map(|x| format!("{}()", x)) |
             Token("|").map(|_| " | ".to_string()) |
             Token("{").map(|_| "Many(".to_string()) |
@@ -23,6 +23,22 @@ macro_rules! things {
             Some(" ")
         ).map(|x|
             x.into_iter().reduce(|a,b| a+&b).unwrap_or_else(|| "error at things".to_string()))
+        * Try(Token("\n") >> whitespace() >> Token("| ") >>
+            Many(
+                Many(
+                    (identifier().map(|x| format!("{}()", x)) |
+                    Token("|").map(|_| " | ".to_string()) |
+                    Token("{").map(|_| "Many(".to_string()) |
+                    Token("}").map(|_| ")".to_string()) |
+                    Token("[").map(|_| "Try(".to_string()) |
+                    Token("]").map(|_| ")".to_string())) |
+                    ParseRegex(r"\S*").map(|x| format!("Token(\"{}\")", x)),
+                    Some(" ")
+                ).map(|x|
+                    x.into_iter().reduce(|a,b| a+&b).unwrap_or_else(|| "error at things".to_string())),
+                Some("\n | ")                
+            ).map(|x| x.into_iter().reduce(|a,b| a+"\n.or("+&b).unwrap_or_else(|| "error at things".to_string()))
+        )).map(|(a,b)| a+&b.unwrap_or_else(|| "".to_string()))
     )};
 }
 
@@ -45,11 +61,19 @@ fn identifier() -> impl Parser<Out = String> {
 
 #[test]
 fn test() {
-    let input = "block_identifier ::= identifier
-cell_identifier ::= identifier
-config_identifier ::= identifier
+    let input = "
+delay3 ::=
+ # delay_value
+ | # ( mintypmax_expression [ , mintypmax_expression [ , mintypmax_expression ] ] )
+delay2 ::=
+ # delay_value
+ | # ( mintypmax_expression [ , mintypmax_expression ] )
+delay_value ::=
+ unsigned_number
+ | real_number
+ | identifier
     ";
     let parser = ebnf(input);
-    println!("{:?}", parser);
+    //println!("{:?}", parser);
     println!("{}", parser.unwrap())
 }

@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::identifiers::{real_identifier, variable_identifier}, expressions::expressions::constant_expression};
+use crate::verilog::{general::identifiers::{real_identifier, variable_identifier, identifier}, expressions::{expressions::{constant_expression, mintypmax_expression}, numbers::{unsigned_number, real_number}}};
 
 use super::{ranges::dimension, ast::*};
 
@@ -57,4 +57,48 @@ pub fn variable_type() -> impl Parser<Out = VariableDeclaration> {
 
 // Delays
 
-//TODO
+/// delay3 ::=
+///     # delay_value
+///   | # ( mintypmax_expression [ , mintypmax_expression [ , mintypmax_expression ] ] )
+pub fn delay3() -> impl Parser<Out = Delay3> {
+    (token("#") >> delay_value()).map(Delay3::Value)
+        | ((token("#") >> token("(") >> mintypmax_expression())
+            * (Try((token(",") >> mintypmax_expression())
+                * Try(token(",") >> mintypmax_expression())) << token(")")))
+            .map(|(a,b)| {
+                match b {
+                    Some(c) => {
+                        match c.1 {
+                            Some(d) => Delay3::Expr3(a, c.0, d),
+                            None => Delay3::Expr2(a, c.0),
+                        }
+                    },
+                    None => Delay3::Expr1(a),
+                }
+            })
+}
+
+/// delay2 ::=
+///     # delay_value
+///   | # ( mintypmax_expression [ , mintypmax_expression ] )
+pub fn delay2() -> impl Parser<Out = Delay2> {
+    (token("#") >> delay_value()).map(Delay2::Value)
+        | ((token("#") >> token("(") >> mintypmax_expression())
+            * (Try(token(",") >> mintypmax_expression()) << token(")")))
+            .map(|(a, b)| {
+                match b {
+                    Some(c) => Delay2::Expr2(a, c),
+                    None => Delay2::Expr1(a),
+                }
+            })
+}
+
+/// delay_value ::=
+///     unsigned_number
+///   | real_number
+///   | identifier 
+pub fn delay_value() -> impl Parser<Out = String> {
+    unsigned_number()
+        .or(real_number())
+        .or(identifier())
+}

@@ -1,10 +1,12 @@
-use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue}, general::ast::Attr};
+use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue, ConstantOrNot, MintypmaxExpression}, general::ast::Attr, declaration::ast::BlockItemDeclaration};
 
 #[derive(Debug)]
-pub struct BlockAssign(pub VariableLvalue, pub Expression);
+pub struct BlockAssign(pub VariableLvalue, pub Option<DelayOrEventCtrl>, pub Expression);
 
-pub struct NonBlockAssign(pub VariableLvalue, pub Expression);
+#[derive(Debug)]
+pub struct NonBlockAssign(pub VariableLvalue, pub Option<DelayOrEventCtrl>, pub Expression);
 
+#[derive(Debug)]
 pub enum ProceduralContinuous {
     Assign(VariableAssign),
     Deassign(VariableLvalue),
@@ -14,10 +16,26 @@ pub enum ProceduralContinuous {
     ReleaseNet(NetLvalue),
 }
 
+#[derive(Debug)]
 pub struct VariableAssign(pub VariableLvalue, pub Expression);
 
 #[derive(Debug)]
 pub struct NetAssign(pub NetLvalue, pub Expression);
+
+#[derive(Debug)]
+pub struct SeqBlock {
+    pub block_item: Option<(String, Vec<BlockItemDeclaration>)>,
+    pub statement: Vec<Statement>,
+}
+impl SeqBlock {
+    pub fn new(input: (Option<(String, Vec<BlockItemDeclaration>)>, Vec<Statement>)) -> Self {
+        Self {
+            block_item: input.0,
+            statement: input.1,
+        }
+    }
+}
+
 
 #[derive(Debug)]
 pub struct Statement {
@@ -34,6 +52,23 @@ impl Statement {
     pub fn conditional_statement(a: (Vec<Attr>, Conditional)) -> Self {
         Self { attribute: a.0, item: StatementItem::ConditionalStatement(a.1) }
     }
+
+    pub fn loop_statement(a: (Vec<Attr>, Loop)) -> Self {
+        Self { attribute: a.0, item: StatementItem::Loop(Box::new(a.1)) }
+    }
+    pub fn nonblocking_assignment(a: (Vec<Attr>, NonBlockAssign)) -> Self {
+        Self { attribute: a.0, item: StatementItem::NonBlockAssign(a.1) }
+    }
+
+    pub fn procedural_continuous_assignments(a: (Vec<Attr>, ProceduralContinuous)) -> Self {
+        Self { attribute: a.0, item: StatementItem::ProceduralContinuous(a.1) }
+    }
+    pub fn procedural_timing_control_statement(a: (Vec<Attr>, (ProceduralTimingCtrl, StatementOrNull))) -> Self {
+        Self { attribute: a.0, item: StatementItem::ProceduralTimingCtrlStatement(a.1.0, Box::new(a.1.1)) }
+    }
+    pub fn seq_block(a: (Vec<Attr>, SeqBlock)) -> Self {
+        Self { attribute: a.0, item: StatementItem::SeqBlock(a.1) }
+    }
 }
 
 #[derive(Debug)]
@@ -41,6 +76,13 @@ pub enum StatementItem {
     BlockAssign(BlockAssign),
     CaseStatement(CaseState),
     ConditionalStatement(Conditional),
+
+    Loop(Box<Loop>),
+    NonBlockAssign(NonBlockAssign),
+
+    ProceduralContinuous(ProceduralContinuous),
+    ProceduralTimingCtrlStatement(ProceduralTimingCtrl, Box<StatementOrNull>),
+    SeqBlock(SeqBlock),
 }
 
 #[derive(Debug)]
@@ -58,7 +100,20 @@ impl StatementOrNull {
 }
 
 // timing ctrl
+#[derive(Debug)]
+pub enum DelayCtrl {
+    Value(String),
+    Expr(ConstantOrNot<MintypmaxExpression>),
+}
 
+#[derive(Debug)]
+pub enum DelayOrEventCtrl {
+    Delay(DelayCtrl),
+    Event(EventCtrl),
+    Repeat(Expression, EventCtrl),
+}
+
+#[derive(Debug)]
 pub enum EventCtrl {
     HierarchicalEvent(String),
     EventExpression(EventExpression),
@@ -66,12 +121,19 @@ pub enum EventCtrl {
     Auto2,
 }
 
+#[derive(Debug)]
 pub enum EventExpression {
     Expression(Expression),
     Posedge(Expression),
     Negedge(Expression),
     Or((Box<EventExpression>, Box<EventExpression>)),
     And((Box<EventExpression>, Box<EventExpression>)),
+}
+
+#[derive(Debug)]
+pub enum ProceduralTimingCtrl {
+    Delay(DelayCtrl),
+    Event(EventCtrl),
 }
 
 // conditional
@@ -96,6 +158,7 @@ pub enum CaseItem {
 }
 
 //looping
+#[derive(Debug)]
 pub enum Loop {
     Forever(Statement),
     Repeat((Expression, Statement)),
