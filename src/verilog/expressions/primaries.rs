@@ -1,5 +1,8 @@
 use parser_rust_simple::prelude::*;
+use crate::verilog::general::identifiers::hierarchical_identifier;
+
 use super::ast::*;
+use super::expressions::{expression, range_expression};
 use super::numbers::number;
 //use crate::verilog::general::identifiers::*;
 //use super::expressions::*;
@@ -58,13 +61,14 @@ pub fn module_path_primary() -> impl Parser<Out = ModulePathPrimary> {
 ///  | system_function_call
 ///  | ( mintypmax_expression )
 ///  | string
+#[inline]
 pub fn primary() -> impl Parser<Out = Primary> {
     number().map(Primary::Number)
+        | (hierarchical_identifier().zip(Try(
+            Many(token("[") >> tobox!(expression()) << token("]"), None) * (token("[") >> tobox!(range_expression()) << token("]"))
+        ))).map(|x| Primary::Hierarchical(x.0, Box::new(x.1)))
         //TODO
-        /*.or(hierarchical_identifier() * Try(
-            Many(Token("[") >> expression() << Token("]") ) * (Token("[") >> range_expression() << Token("]"))
-        ))
-        .or(concatenation())
+        /*.or(concatenation())
         .or(multiple_concatenation())
         .or(function_call())
         .or(system_function_call())

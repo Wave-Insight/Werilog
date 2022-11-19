@@ -30,7 +30,7 @@ unary + unary - Unary operators
 >>> Arithmetic right shift
 ? : Conditional
 */
-
+/*
 pub enum Operator {
     Concatenation,// {}
     Replication,// {{}}
@@ -153,4 +153,78 @@ pub fn shift() -> impl Parser<Out = Shift> {
     Token(">>>").map(|_| Shift::ArithmeticRight) |
     Token("<<").map(|_| Shift::LogicalLeft) |
     Token(">>").map(|_| Shift::LogicalRight)
+}
+*/
+
+/// unary_operator ::= + | - | ! | ~ | & | ~& | | | ~| | ^ | ~^ | ^~
+pub fn unary_operator<'a>() -> impl Parser<Out = &'a str> {
+    token("+")
+        | token("-")
+        | token("!")
+        | token("~")
+        | token("&")
+        | token("~&")
+        | token("|")
+        | token("~|")
+        | token("^")
+        | token("~^")
+        | token("^~")
+}
+
+/// binary_operator ::= + | - | * | / | % | == | != | === | !== | && | || | **
+///   | < | <= | > | >= | & | | | ^ | ^~ | ~^ | >> | << | >>> | <<<
+pub fn binary_operator<'a>() -> impl Parser<Out = &'a str> {
+    token("+")
+        | token("-")
+        | token("*")
+        | token("/")
+        | token("%")
+        | token("==")
+        | token("!=")
+        | token("===")
+        | token("!==")
+        | token("&&")
+        | token("||")
+        | token("**")
+        | token("<")
+        | token("<=")
+        | token(">")
+        | token(">=")
+        | token("&")
+        | token("|")
+        | token("^")
+        | token("^~")
+        | token("~^")
+        | token(">>")
+        | token("<<")
+        | token(">>>")
+        | token("<<<")
+}
+
+/// unary_module_path_operator ::=
+///   ! | ~ | & | ~& | | | ~| | ^ | ~^ | ^~
+pub fn unary_module_path_operator<'a>() -> impl Parser<Out = &'a str> {
+    token("!")
+        | token("~")
+        | token("&")
+        | token("~&")
+        | token("|")
+        | token("~|")
+        | token("^")
+        | token("~^")
+        | token("^~")
+}
+
+/// binary_module_path_operator ::=
+///   == | != | && | || | & | | | ^ | ^~ | ~^
+pub fn binary_module_path_operator<'a>() -> impl Parser<Out = &'a str> {
+    token("==")
+        | token("!=")
+        | token("&&")
+        | token("||")
+        | token("&")
+        | token("|")
+        | token("^")
+        | token("^~")
+        | token("~^")
 }

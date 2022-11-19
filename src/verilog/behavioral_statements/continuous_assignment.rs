@@ -21,7 +21,7 @@ pub fn list_of_net_assignments() -> impl Parser<Out = Vec<NetAssign>> {
 /// net_assignment ::= net_lvalue = expression
 pub fn net_assignment() -> impl Parser<Out = NetAssign> {
     (whitespace() >> net_lvalue().left(whitespace())
-        .zip(token("=") >> expression().left(whitespace())))
+        .zip(token("=") >> tobox!(expression()).left(whitespace())))
         .map(|(a,b)| NetAssign(a, b))
 }
 

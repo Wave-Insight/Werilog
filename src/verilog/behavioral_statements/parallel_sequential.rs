@@ -14,6 +14,15 @@ use super::{statements::statement, ast::SeqBlock};
 /// seq_block ::= begin [ : block_identifier { block_item_declaration } ] { statement } end
 pub fn seq_block() -> impl Parser<Out = SeqBlock> {
     ((token("begin") >> Try((token(":") >> block_identifier()) * Many(block_item_declaration(), None)))
-        * (Many(statement(), None) << token("end")))
+        * (Many(tobox!(statement()), None) << token("end")))
         .map(SeqBlock::new)
+}
+
+#[test]
+fn test() {
+    let input = r"begin
+    _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox;
+    end
+    ";
+    println!("{:?}", seq_block().run_with_out(input, Location::new()))
 }

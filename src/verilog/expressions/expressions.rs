@@ -1,5 +1,5 @@
 use parser_rust_simple::prelude::*;
-use crate::verilog::general::{attributes::attribute_instance, white_space::white_space, ast::Attr};
+use crate::verilog::{general::{attributes::attribute_instance, white_space::white_space, ast::Attr}, expressions::operators::{unary_operator, binary_operator}};
 use super::{ast::*, primaries::{primary, constant_primary}};
 
 /// base_expression ::= expression
@@ -71,12 +71,14 @@ pub fn dimension_constant_expression() -> impl Parser<Out = ConstantExpression> 
 ///  | unary_operator { attribute_instance } primary
 ///  | expression binary_operator { attribute_instance } expression
 ///  | conditional_expression
+#[inline]
 pub fn expression() -> impl Parser<Out = Expression> {//impl Parser<Out = Expression> {
     (primary().map(Expression::Primary))
-        //TODO
-        /*.or(unary_operator() * Many(attribute_instance()) * primary())
-        .or(expression() * binary_operator() * Many(attribute_instance()) * expression())*/
-        .or(tobox!(conditional_expression())
+        | (unary_operator().zip(Many(attribute_instance(), None)) * primary())
+            .map(|x| Expression::Unary(x.0.0.to_string(), x.0.1, x.1))
+        | (tobox!(expression()) * binary_operator() * Many(attribute_instance(), None) * tobox!(expression()))
+            .map(|x| Expression::Binary(Box::new(x.0.0.0), x.0.0.1.to_string(), x.0.1, Box::new(x.1)))
+        | (tobox!(conditional_expression())
             .map(|(((a,b),c),d)| Expression::Condition((Box::new(a), b, Box::new(c), Box::new(d)))))
 }
 
@@ -163,4 +165,16 @@ pub fn range_expression() -> impl Parser<Out = RangeExpression> {
 /// width_constant_expression ::= constant_expression
 fn width_constant_expression() -> impl Parser<Out = ConstantExpression> {
     constant_expression()
+}
+
+#[test]
+fn test() {
+    let input = "5";
+    println!("{:?}", expression().run_with_out(input, Location::new()));
+    let input = "some_signal";
+    println!("{:?}", expression().run_with_out(input, Location::new()));
+    let input = "some_signal[5]";
+    println!("{:?}", expression().run_with_out(input, Location::new()));
+    let input = "";
+    println!("{:?}", expression().run_with_out(input, Location::new()));
 }

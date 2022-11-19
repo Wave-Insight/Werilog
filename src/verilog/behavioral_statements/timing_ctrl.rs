@@ -19,7 +19,7 @@ pub fn delay_control() -> impl Parser<Out = DelayCtrl> {
 pub fn delay_or_event_control() -> impl Parser<Out = DelayOrEventCtrl> {
     delay_control().map(DelayOrEventCtrl::Delay)
         | event_control().map(DelayOrEventCtrl::Event)
-        | ((token("repeat") >> token("(") >> expression() << token(")")) * event_control())
+        | ((token("repeat") >> token("(") >> tobox!(expression()) << token(")")) * event_control())
             .map(|x| DelayOrEventCtrl::Repeat(x.0, x.1))
 }
 
@@ -39,7 +39,7 @@ pub fn delay_or_event_control() -> impl Parser<Out = DelayOrEventCtrl> {
 ///  | @ (*) 
 pub fn event_control() -> impl Parser<Out = EventCtrl> {
     (token("@") >> hierarchical_event_identifier()).map(EventCtrl::HierarchicalEvent)
-        | (token("@") >> token("(") >> event_expression() << token(")")).map(EventCtrl::EventExpression)
+        | (token("@") >> token("(") >> tobox!(event_expression()) << token(")")).map(EventCtrl::EventExpression)
         | (token("@*")).map(|_| EventCtrl::Auto1)
         | (token("@") >> token("(*)")).map(|_| EventCtrl::Auto2)//TODO: (*) should split to three token?
 }
@@ -78,11 +78,11 @@ pub fn procedural_timing_control() -> impl Parser<Out = ProceduralTimingCtrl> {
 /// procedural_timing_control_statement ::=
 ///   procedural_timing_control statement_or_null
 pub fn procedural_timing_control_statement() -> impl Parser<Out = (ProceduralTimingCtrl, StatementOrNull)> {
-    procedural_timing_control().zip(statement_or_null())
+    procedural_timing_control().zip(tobox!(statement_or_null()))
 }
 
 /// wait_statement ::=
 ///   wait ( expression ) statement_or_null 
 pub fn wait_statement() -> impl Parser<Out = (Expression, StatementOrNull)> {
-    (token("wait") >> token("(") >> expression() << token(")")) * statement_or_null()
+    (token("wait") >> token("(") >> tobox!(expression()) << token(")")) * statement_or_null()
 }

@@ -41,6 +41,8 @@ pub enum MintypmaxExpression {
 #[derive(Debug)]
 pub enum Expression {
     Primary(Primary),
+    Unary(String, Vec<Attr>, Primary),
+    Binary(Box<Expression>, String,Vec<Attr> , Box<Expression>),
     Condition((Box<Expression>, Vec<Attr>, Box<Expression>, Box<Expression>)),
 }
 
@@ -66,6 +68,7 @@ pub enum ModulePathPrimary {
 #[derive(Debug)]
 pub enum Primary {
     Number(Number),
+    Hierarchical(String, Box<Option<(Vec<Expression>, RangeExpression)>>),
 }
 
 #[derive(Debug)]

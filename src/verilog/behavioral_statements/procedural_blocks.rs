@@ -22,7 +22,7 @@ pub fn blocking_assignment() -> impl Parser<Out = BlockAssign> {
     (variable_lvalue().left(whitespace())
         * (token("=")
         >> Try(delay_or_event_control()))
-        * expression()).map(|((a, b), c)| BlockAssign(a, b, c))
+        * tobox!(expression())).map(|((a, b), c)| BlockAssign(a, b, c))
 }
 
 /// nonblocking_assignment ::= variable_lvalue <= [ delay_or_event_control ] expression
@@ -30,7 +30,7 @@ pub fn nonblocking_assignment() -> impl Parser<Out = NonBlockAssign> {
     (variable_lvalue().left(whitespace())
         * (token("<=")
         >> Try(delay_or_event_control()))
-        * expression()).map(|((a, b), c)| NonBlockAssign(a, b, c))
+        * tobox!(expression())).map(|((a, b), c)| NonBlockAssign(a, b, c))
 }
 
 /// procedural_continuous_assignments ::=
@@ -52,5 +52,19 @@ pub fn procedural_continuous_assignments() -> impl Parser<Out = ProceduralContin
 /// variable_assignment ::= variable_lvalue = expression
 pub fn variable_assignment() -> impl Parser<Out = VariableAssign> {
     (variable_lvalue().left(whitespace())
-        * (token("=") >> expression())).map(|(a,b)| VariableAssign(a, b))
+        * (token("=") >> tobox!(expression()))).map(|(a,b)| VariableAssign(a, b))
+}
+
+#[test]
+fn test() {
+    let input = r"_zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox[_zz_Tout_getTAU_SboxOut_1];";
+    println!("{:?}", nonblocking_assignment().run_with_out(input, Location::new()));
+
+    let input = r"always @(posedge clk) begin
+    if(_zz_Tout_getTAU_SboxOut_5) begin
+      _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox;
+    end
+  end
+    ";
+    println!("{:?}", always_construct().run_with_out(input, Location::new()));
 }

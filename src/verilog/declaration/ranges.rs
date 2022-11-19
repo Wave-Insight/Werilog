@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::expressions::{expressions::{dimension_constant_expression, msb_constant_expression, lsb_constant_expression}, ast::ConstantExpression};
+use crate::verilog::expressions::expressions::{dimension_constant_expression, msb_constant_expression, lsb_constant_expression};
 
 use super::ast::Range;
 

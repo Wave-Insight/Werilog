@@ -12,14 +12,14 @@ use super::{statements::statement_or_null, ast::{CaseItem, CaseState}};
 ///  | casex ( expression )
 ///      case_item { case_item } endcase
 pub fn case_statement() -> impl Parser<Out = CaseState> {
-    ((token("case") >> token("(") >> expression() << token(")"))
-        * (Many(case_item(), None) << token("endcase")))
+    ((token("case") >> token("(") >> tobox!(expression()) << token(")"))
+        * (Many(tobox!(case_item()), None) << token("endcase")))
         .map(CaseState::Case)
-        | ((token("casez") >> token("(") >> expression() << token(")"))
-            * (Many(case_item(), None) << token("endcase")))
+        | ((token("casez") >> token("(") >> tobox!(expression()) << token(")"))
+            * (Many(tobox!(case_item()), None) << token("endcase")))
             .map(CaseState::Casez)
-        | ((token("casex") >> token("(") >> expression() << token(")"))
-            * (Many(case_item(), None) << token("endcase")))
+        | ((token("casex") >> token("(") >> tobox!(expression()) << token(")"))
+            * (Many(tobox!(case_item()), None) << token("endcase")))
             .map(CaseState::Casex)
 }
 

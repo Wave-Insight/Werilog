@@ -51,7 +51,7 @@ pub fn name_of_module_instance() -> impl Parser<Out = String> {
 pub fn list_of_port_connections() -> impl Parser<Out = String> {
     Many(ordered_port_connection(), Some(","))
         | Many(named_port_connection(), Some(","))
-}
+}*/
 
 /// ordered_port_connection ::= { attribute_instance } [ expression ]
 pub fn ordered_port_connection() -> impl Parser<Out = (Vec<Attr>, Option<Expression>)> {
@@ -62,4 +62,4 @@ pub fn ordered_port_connection() -> impl Parser<Out = (Vec<Attr>, Option<Express
 pub fn named_port_connection() -> impl Parser<Out = ((Vec<Attr>, String), Option<Expression>)> {
     (Many(attribute_instance(), None) << token(".")) * port_identifier()
         * (token("(") >> Try(expression()) << token(")"))
-}*/
+}
