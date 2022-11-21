@@ -157,13 +157,13 @@ pub fn real_identifier() -> impl Parser<Out = String> {
 
 /// simple_identifier ::= [ a-zA-Z_ ] { [ a-zA-Z0-9_$ ] }
 pub fn simple_identifier() -> impl Parser<Out = String> {
-    //(ParseRegex(r"[a-zA-Z_]") *
-    //    Many(ParseRegex(r"[a-zA-Z_0-9\$]"),None)
-    //        .map(|x| x.into_iter()
-    //                                .reduce(|a,b| a+&b)
-    //                                .unwrap_or_default())
-    //).map(|x| x.0+&x.1)
-    ParseRegex(r"[a-zA-Z_][a-zA-Z0-9_\$]*") << white_space()
+    (ParseRegex(r"[a-zA-Z_][a-zA-Z0-9_\$]*"))
+        .flatmap(move |x| {
+            if keywords().contains(&x) {
+                Err(Location { line: usize::MAX, col: usize::MAX })//TODO:better err
+            }else {
+                Ok(x)
+            }}) << white_space()
 }
 
 /// specparam_identifier ::= identifier
@@ -214,6 +214,133 @@ pub fn udp_instance_identifier() -> impl Parser<Out = String> {
 /// variable_identifier ::= identifier
 pub fn variable_identifier() -> impl Parser<Out = String> {
     identifier()
+}
+
+fn keywords() -> Vec<String> {
+    vec!["always".to_string(),
+"and".to_string(),
+"assign".to_string(),
+"automatic".to_string(),
+"begin".to_string(),
+"buf".to_string(),
+"bufif0".to_string(),
+"bufif1".to_string(),
+"case".to_string(),
+"casex".to_string(),
+"casez".to_string(),
+"cell".to_string(),
+"cmos".to_string(),
+"config".to_string(),
+"deassign".to_string(),
+"default".to_string(),
+"defparam".to_string(),
+"design".to_string(),
+"disable".to_string(),
+"edge".to_string(),
+"else".to_string(),
+"end".to_string(),
+"endcase".to_string(),
+"endconfig".to_string(),
+"endfunction".to_string(),
+"endgenerate".to_string(),
+"endmodule".to_string(),
+"endprimitive".to_string(),
+"endspecify".to_string(),
+"endtable".to_string(),
+"endtask".to_string(),
+"event".to_string(),
+"for".to_string(),
+"force".to_string(),
+"forever".to_string(),
+"fork".to_string(),
+"function".to_string(),
+"generate".to_string(),
+"genvar".to_string(),
+"highz0".to_string(),
+"highz1".to_string(),
+"if".to_string(),
+"ifnone".to_string(),
+"incdir".to_string(),
+"include".to_string(),
+"initial".to_string(),
+"inout".to_string(),
+"input".to_string(),
+"instance".to_string(),
+"integer".to_string(),
+"join".to_string(),
+"large".to_string(),
+"liblist".to_string(),
+"library".to_string(),
+"localparam".to_string(),
+"macromodule".to_string(),
+"medium".to_string(),
+"module".to_string(),
+"nand".to_string(),
+"negedge".to_string(),
+"nmos".to_string(),
+"nor".to_string(),
+"noshowcancelled".to_string(),
+"not".to_string(),
+"notif0".to_string(),
+"notif1".to_string(),
+"or".to_string(),
+"output".to_string(),
+"parameter".to_string(),
+"pmos".to_string(),
+"posedge".to_string(),
+"primitive".to_string(),
+"pull0".to_string(),
+"pull1".to_string(),
+"pulldown".to_string(),
+"pullup".to_string(),
+"pulsestyle_onevent".to_string(),
+"pulsestyle_ondetect".to_string(),
+"rcmos".to_string(),
+"real".to_string(),
+"realtime".to_string(),
+"reg".to_string(),
+"release".to_string(),
+"repeat".to_string(),
+"rnmos".to_string(),
+"rpmos".to_string(),
+"rtran".to_string(),
+"rtranif0".to_string(),
+"rtranif1".to_string(),
+"scalared".to_string(),
+"showcancelled".to_string(),
+"signed".to_string(),
+"small".to_string(),
+"specify".to_string(),
+"specparam".to_string(),
+"strong0".to_string(),
+"strong1".to_string(),
+"supply0".to_string(),
+"supply1".to_string(),
+"table".to_string(),
+"task".to_string(),
+"time".to_string(),
+"tran".to_string(),
+"tranif0".to_string(),
+"tranif1".to_string(),
+"tri".to_string(),
+"tri0".to_string(),
+"tri1".to_string(),
+"triand".to_string(),
+"trior".to_string(),
+"trireg".to_string(),
+"unsigned1".to_string(),
+"use".to_string(),
+"uwire".to_string(),
+"vectored".to_string(),
+"wait".to_string(),
+"wand".to_string(),
+"weak0".to_string(),
+"weak1".to_string(),
+"while".to_string(),
+"wire".to_string(),
+"wor".to_string(),
+"xnor".to_string(),
+"xor".to_string()]
 }
 
 #[test]
