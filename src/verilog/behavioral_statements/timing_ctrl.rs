@@ -39,9 +39,9 @@ pub fn delay_or_event_control() -> impl Parser<Out = DelayOrEventCtrl> {
 ///  | @ (*) 
 pub fn event_control() -> impl Parser<Out = EventCtrl> {
     (token("@") >> hierarchical_event_identifier()).map(EventCtrl::HierarchicalEvent)
+        | (token("@") >> token("(") >> token("*") >> token(")")).map(|_| EventCtrl::Auto2)//TODO: (*) should split to three token?
         | (token("@") >> token("(") >> tobox!(event_expression()) << token(")")).map(EventCtrl::EventExpression)
         | (token("@*")).map(|_| EventCtrl::Auto1)
-        | (token("@") >> token("(*)")).map(|_| EventCtrl::Auto2)//TODO: (*) should split to three token?
 }
 
 /// event_trigger ::=
@@ -58,13 +58,13 @@ pub fn event_control() -> impl Parser<Out = EventCtrl> {
 ///  | event_expression or event_expression
 ///  | event_expression , event_expression
 pub fn event_expression() -> impl Parser<Out = EventExpression> {
-    expression().map(EventExpression::Expression)
-        | (token("posedge") >> expression()).map(EventExpression::Posedge)
+    (token("posedge") >> expression()).map(EventExpression::Posedge)
         | (token("negedge") >> expression()).map(EventExpression::Negedge)
         | (tobox!(event_expression()) * (token("or") >> tobox!(event_expression())))
             .map(|x| EventExpression::Or((Box::new(x.0), Box::new(x.1))))
         | (tobox!(event_expression()) * (token(",") >> tobox!(event_expression())))
             .map(|x| EventExpression::And((Box::new(x.0), Box::new(x.1))))
+        | expression().map(EventExpression::Expression)
 }
 
 /// procedural_timing_control ::=
@@ -85,4 +85,10 @@ pub fn procedural_timing_control_statement() -> impl Parser<Out = (ProceduralTim
 ///   wait ( expression ) statement_or_null 
 pub fn wait_statement() -> impl Parser<Out = (Expression, StatementOrNull)> {
     (token("wait") >> token("(") >> tobox!(expression()) << token(")")) * statement_or_null()
+}
+
+#[test]
+fn test() {
+    let input = r"@(posedge clk)";
+    println!("{:?}", procedural_timing_control().run_with_out(input, Location::new()))
 }

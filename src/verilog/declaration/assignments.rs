@@ -1,10 +1,10 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::identifiers::{hierarchical_parameter_identifier, net_identifier, parameter_identifier}, expressions::{expressions::{constant_mintypmax_expression, expression}, ast::{ConstantOrNot, MintypmaxExpression, Expression}}};
+use crate::verilog::{general::identifiers::{hierarchical_parameter_identifier, net_identifier, parameter_identifier}, expressions::{expressions::{constant_mintypmax_expression, expression}, ast::{Expression, ConstantMintypmaxExpression}}};
 
 
 /// defparam_assignment ::= hierarchical_parameter_identifier = constant_mintypmax_expression
-pub fn defparam_assignment() -> impl Parser<Out = (String, ConstantOrNot<MintypmaxExpression>)> {
+pub fn defparam_assignment() -> impl Parser<Out = (String, ConstantMintypmaxExpression)> {
     hierarchical_parameter_identifier().left(token("=")) * constant_mintypmax_expression()
 }
 
@@ -14,7 +14,7 @@ pub fn net_decl_assignment() -> impl Parser<Out = (String, Expression)> {
 }
 
 /// param_assignment ::= parameter_identifier = constant_mintypmax_expression
-pub fn param_assignment() -> impl Parser<Out = (String, ConstantOrNot<MintypmaxExpression>)> {
+pub fn param_assignment() -> impl Parser<Out = (String, ConstantMintypmaxExpression)> {
     parameter_identifier().left(token("=")) * constant_mintypmax_expression()
 }
 /*
@@ -38,16 +38,16 @@ pub fn param_assignment() -> impl Parser<Out = (String, ConstantOrNot<MintypmaxE
 //}
 
 /// error_limit_value ::= limit_value
-pub fn error_limit_value() -> impl Parser<Out = ConstantOrNot<MintypmaxExpression>> {
+pub fn error_limit_value() -> impl Parser<Out = ConstantMintypmaxExpression> {
     limit_value()
 }
 
 /// reject_limit_value ::= limit_value
-pub fn reject_limit_value() -> impl Parser<Out = ConstantOrNot<MintypmaxExpression>> {
+pub fn reject_limit_value() -> impl Parser<Out = ConstantMintypmaxExpression> {
     limit_value()
 }
 
 /// limit_value ::= constant_mintypmax_expression
-pub fn limit_value() -> impl Parser<Out = ConstantOrNot<MintypmaxExpression>> {
+pub fn limit_value() -> impl Parser<Out = ConstantMintypmaxExpression> {
     constant_mintypmax_expression()
 }

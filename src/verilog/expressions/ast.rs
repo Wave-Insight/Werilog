@@ -33,9 +33,15 @@ pub enum ConstantRangeExpression {
 }
 
 #[derive(Debug)]
-pub enum MintypmaxExpression {
+pub enum ConstantMintypmaxExpression {
     ConstantExpression(ConstantExpression),
-    Three((ConstantExpression, ConstantExpression, ConstantExpression))
+    Three(ConstantExpression, ConstantExpression, ConstantExpression),
+}
+
+#[derive(Debug)]
+pub enum MintypmaxExpression {
+    Expression(Expression),
+    Three(Expression, Expression, Expression),
 }
 
 #[derive(Debug)]
@@ -43,7 +49,7 @@ pub enum Expression {
     Primary(Primary),
     Unary(String, Vec<Attr>, Primary),
     Binary(Box<Expression>, String,Vec<Attr> , Box<Expression>),
-    Condition((Box<Expression>, Vec<Attr>, Box<Expression>, Box<Expression>)),
+    Condition(Box<Expression>, Vec<Attr>, Box<Expression>, Box<Expression>),
 }
 
 #[derive(Debug)]
@@ -68,7 +74,11 @@ pub enum ModulePathPrimary {
 #[derive(Debug)]
 pub enum Primary {
     Number(Number),
-    Hierarchical(String, Box<Option<(Vec<Expression>, RangeExpression)>>),
+    //TODO:Hierarchical(String, Box<Option<(Vec<Expression>, RangeExpression)>>),
+    Hierarchical(String, Box<Option<Vec<RangeExpression>>>),
+
+    MintypmaxExpression(Box<MintypmaxExpression>),
+    String(String),
 }
 
 #[derive(Debug)]

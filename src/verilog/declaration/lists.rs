@@ -1,6 +1,6 @@
 use parser_rust_simple::prelude::*;
 
-use crate::verilog::{general::identifiers::{net_identifier, port_identifier, event_identifier}, expressions::{ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression}, expressions::constant_expression}};
+use crate::verilog::{general::identifiers::{net_identifier, port_identifier, event_identifier}, expressions::{ast::{ConstantExpression, ConstantMintypmaxExpression}, expressions::constant_expression}};
 
 use super::{ranges::dimension, assignments::param_assignment, ast::{Range, VariableDeclaration, RealDeclaration}, data_types::{variable_type, real_type}};
 
@@ -28,7 +28,7 @@ pub fn list_of_net_identifiers() -> impl Parser<Out = Vec<(String, Vec<Range>)>>
 }
 
 /// list_of_param_assignments ::= param_assignment { , param_assignment }
-pub fn list_of_param_assignments() -> impl Parser<Out = Vec<(String, ConstantOrNot<MintypmaxExpression>)>> {
+pub fn list_of_param_assignments() -> impl Parser<Out = Vec<(String, ConstantMintypmaxExpression)>> {
     Many(param_assignment(), Some(","))
 }
 

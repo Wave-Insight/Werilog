@@ -1,4 +1,4 @@
-use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue, ConstantOrNot, MintypmaxExpression}, general::ast::Attr, declaration::ast::BlockItemDeclaration};
+use crate::verilog::{expressions::ast::{VariableLvalue, Expression, NetLvalue, MintypmaxExpression}, general::ast::Attr, declaration::ast::BlockItemDeclaration};
 
 #[derive(Debug)]
 pub struct BlockAssign(pub VariableLvalue, pub Option<DelayOrEventCtrl>, pub Expression);
@@ -103,7 +103,7 @@ impl StatementOrNull {
 #[derive(Debug)]
 pub enum DelayCtrl {
     Value(String),
-    Expr(ConstantOrNot<MintypmaxExpression>),
+    Expr(MintypmaxExpression),
 }
 
 #[derive(Debug)]

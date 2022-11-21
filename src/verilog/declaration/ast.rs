@@ -1,28 +1,28 @@
-use crate::verilog::{expressions::ast::{ConstantExpression, ConstantOrNot, MintypmaxExpression}, general::ast::Attr};
+use crate::verilog::{expressions::ast::{ConstantExpression, MintypmaxExpression, ConstantMintypmaxExpression}, general::ast::Attr};
 
 
 #[derive(Debug)]
 pub enum Delay3 {
     Value(String),
-    Expr1(ConstantOrNot<MintypmaxExpression>),
-    Expr2(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
-    Expr3(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
+    Expr1(MintypmaxExpression),
+    Expr2(MintypmaxExpression, MintypmaxExpression),
+    Expr3(MintypmaxExpression, MintypmaxExpression, MintypmaxExpression),
 }
 
 #[derive(Debug)]
 pub enum Delay2 {
     Value(String),
-    Expr1(ConstantOrNot<MintypmaxExpression>),
-    Expr2(ConstantOrNot<MintypmaxExpression>, ConstantOrNot<MintypmaxExpression>),
+    Expr1(MintypmaxExpression),
+    Expr2(MintypmaxExpression, MintypmaxExpression),
 }
 
 #[derive(Debug)]
 pub enum ParameterDeclaration {
-    Notype(bool, Option<Range>, Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
-    Integer(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
-    Real(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
-    Realtime(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
-    Time(Vec<(String, ConstantOrNot<MintypmaxExpression>)>),
+    Notype(bool, Option<Range>, Vec<(String, ConstantMintypmaxExpression)>),
+    Integer(Vec<(String, ConstantMintypmaxExpression)>),
+    Real(Vec<(String, ConstantMintypmaxExpression)>),
+    Realtime(Vec<(String, ConstantMintypmaxExpression)>),
+    Time(Vec<(String, ConstantMintypmaxExpression)>),
 }
 
 
