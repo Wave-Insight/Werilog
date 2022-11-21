@@ -2,13 +2,13 @@ use parser_rust_simple::prelude::*;
 use crate::verilog::general::identifiers::hierarchical_identifier;
 
 use super::ast::*;
-use super::expressions::{expression, range_expression};
+use super::expressions::{range_expression, mintypmax_expression};
 use super::numbers::number;
 //use crate::verilog::general::identifiers::*;
 //use super::expressions::*;
 //use super::concatenations::*;
 //use super::function_calls::*;
-//use super::strings::string;
+use super::strings::string;
 
 /// constant_primary ::=
 ///  number
@@ -65,13 +65,25 @@ pub fn module_path_primary() -> impl Parser<Out = ModulePathPrimary> {
 pub fn primary() -> impl Parser<Out = Primary> {
     number().map(Primary::Number)
         | (hierarchical_identifier().zip(Try(
-            Many(token("[") >> tobox!(expression()) << token("]"), None) * (token("[") >> tobox!(range_expression()) << token("]"))
+            //TODO:Many(token("[") >> tobox!(expression()) << token("]"), None) * (token("[") >> tobox!(range_expression()) << token("]"))
+            Many(token("[") >> tobox!(range_expression()) << token("]"), None)
         ))).map(|x| Primary::Hierarchical(x.0, Box::new(x.1)))
         //TODO
         /*.or(concatenation())
         .or(multiple_concatenation())
         .or(function_call())
-        .or(system_function_call())
-        .or(Token("(") >> mintypmax_expression << Token(")"))
-        .or(string())*/
+        .or(system_function_call())*/
+        | (token("(") >> tobox!(mintypmax_expression()) << token(")"))
+            .map(|x| Primary::MintypmaxExpression(Box::new(x)))
+        | string().map(Primary::String)
+}
+
+#[test]
+fn test() {
+    let input = "signal[range]";
+    println!("{:?}", primary().run_with_out(input, Location::new()));
+    let input = "signal[7:0]";
+    println!("{:?}", primary().run_with_out(input, Location::new()));
+    let input = "(io_K_0_delay_3_1 ^ Tout_ret)";
+    println!("{:?}", primary().run_with_out(input, Location::new()));
 }
