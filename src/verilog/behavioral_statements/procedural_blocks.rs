@@ -62,7 +62,7 @@ fn test() {
 
     let input = r"always @(posedge clk) begin
     if(_zz_Tout_getTAU_SboxOut_5) begin
-      _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox;
+      _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox[_zz_Tout_getTAU_SboxOut_1];
     end
   end
     ";

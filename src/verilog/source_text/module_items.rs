@@ -86,3 +86,20 @@ pub fn non_port_module_item() -> impl Parser<Out = NonPortModuleItem> {
 pub fn parameter_override() -> impl Parser<Out = String> {
     token("defparam") >> list_of_defparam_assignments() << token(";")
 }*/
+
+#[test]
+fn test() {
+    let input = r"assign _zz_Tout_getTAU_SboxOut_1 = _zz_Tout_getTAU_SboxOut[7 : 0];";
+    println!("{:?}", continuous_assign().run_with_out(input, Location::new()));
+    let input = r"always @(*) begin
+    Tout_getTAU_SboxOut[7 : 0] = _zz_Tout_getTAU_Sbox_port0;
+    Tout_getTAU_SboxOut[15 : 8] = _zz_Tout_getTAU_Sbox_port1;
+    Tout_getTAU_SboxOut[23 : 16] = _zz_Tout_getTAU_Sbox_port2;
+    Tout_getTAU_SboxOut[31 : 24] = _zz_Tout_getTAU_Sbox_port3;
+  end";
+    println!("{:?}", always_construct().run_with_out(input, Location::new()));
+    let input = r"always @(posedge clk) begin
+    Klist_4 <= (io_K_0_delay_3_1 ^ Tout_ret);
+  end";
+    println!("{:?}", always_construct().run_with_out(input, Location::new()));
+}
