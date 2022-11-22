@@ -76,6 +76,8 @@ pub enum Primary {
     Number(Number),
     //TODO:Hierarchical(String, Box<Option<(Vec<Expression>, RangeExpression)>>),
     Hierarchical(String, Box<Option<Vec<RangeExpression>>>),
+    Concatenation(Vec<Expression>),
+    MultipleConcatenation(ConstantExpression, Vec<Expression>),
 
     MintypmaxExpression(Box<MintypmaxExpression>),
     String(String),

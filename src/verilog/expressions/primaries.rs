@@ -2,6 +2,7 @@ use parser_rust_simple::prelude::*;
 use crate::verilog::general::identifiers::hierarchical_identifier;
 
 use super::ast::*;
+use super::concatenations::{concatenation, multiple_concatenation};
 use super::expressions::{range_expression, mintypmax_expression};
 use super::numbers::number;
 //use crate::verilog::general::identifiers::*;
@@ -69,9 +70,9 @@ pub fn primary() -> impl Parser<Out = Primary> {
             Many(token("[") >> tobox!(range_expression()) << token("]"), None)
         ))).map(|x| Primary::Hierarchical(x.0, Box::new(x.1)))
         //TODO
-        /*.or(concatenation())
-        .or(multiple_concatenation())
-        .or(function_call())
+        | concatenation().map(Primary::Concatenation)
+        | multiple_concatenation().map(|x| Primary::MultipleConcatenation(x.0, x.1))
+        /*.or(function_call())
         .or(system_function_call())*/
         | (token("(") >> tobox!(mintypmax_expression()) << token(")"))
             .map(|x| Primary::MintypmaxExpression(Box::new(x)))

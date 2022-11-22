@@ -5,7 +5,7 @@ use super::{expressions::*, ast::*};
 
 /// concatenation ::= { expression { , expression } }
 pub fn concatenation() -> impl Parser<Out = Vec<Expression>> {
-    token("{") >> Many(expression().left(white_space()), Some(",")) << token("}")
+    token("{") >> Many(tobox!(expression()).left(white_space()), Some(",")) << token("}")
 }
 
 /// constant_concatenation ::= { constant_expression { , constant_expression } }

@@ -48,6 +48,6 @@ fn test() {
       _zz_Tout_getTAU_Sbox_port0 <= Tout_getTAU_Sbox[_zz_Tout_getTAU_SboxOut_1];
     end
     ";
-    let parse = (token("if") >> token("(") >> expression() << token(")"));
+    let parse = token("if") >> token("(") >> expression() << token(")");
     println!("{:?}", parse.run_with_out(input, Location::new()))
 }
