@@ -1,5 +1,6 @@
 pub mod verilog;
 pub mod ebnf_tools;
+pub mod prelude;
 
 #[cfg(test)]
 mod tests {
