@@ -170,5 +170,5 @@ fn test() {
 
 endmodule
 "#;
-    println!("{:?}", module_declaration().run_with_out(input, Location::new()))
+    println!("{:#?}", module_declaration().run_with_out(input, Location::new()))
 }

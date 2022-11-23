@@ -8,6 +8,6 @@ pub use crate::verilog::general::ast::*;
 use crate::verilog::source_text::verilog_source::module_declaration;
 pub use parser_rust_simple::prelude::*;
 
-pub fn singla_module_parser() -> impl Parser<Out = ModuleDeclaration> {
+pub fn single_module_parser() -> impl Parser<Out = ModuleDeclaration> {
     whitespace() >> module_declaration()
 }

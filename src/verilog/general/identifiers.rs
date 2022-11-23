@@ -20,7 +20,7 @@ pub fn config_identifier() -> impl Parser<Out = String> {
 
 /// escaped_identifier ::= \ {Any_ASCII_character_except_white_space} white_space
 pub fn escaped_identifier() -> impl Parser<Out = String> {
-    Token(r"\") >> ParseRegex(r"[^ \t\n]+") << white_space()
+    Token(r"\") >> ParseRegex(r"[^ \t\n]+") << whitespace()
 }
 
 /// event_identifier ::= identifier
@@ -163,7 +163,7 @@ pub fn simple_identifier() -> impl Parser<Out = String> {
                 Err(Location { line: usize::MAX, col: usize::MAX })//TODO:better err
             }else {
                 Ok(x)
-            }}) << white_space()
+            }}) << whitespace()
 }
 
 /// specparam_identifier ::= identifier
