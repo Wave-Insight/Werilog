@@ -20,6 +20,7 @@ fn constant_base_expression() -> impl Parser<Out = ConstantExpression> {
     constant_expression()
 }
 
+/*
 /// constant_expression ::=
 ///  constant_primary
 /// | unary_operator { attribute_instance } constant_primary
@@ -33,7 +34,39 @@ pub fn constant_expression() -> impl Parser<Out = ConstantExpression> {
             attribute_instance(), None) * constant_expression())
         .or(constant_expression() * Token("?") * Many(attribute_instance(), None)
             * constant_expression() * Token(":") *constant_expression())*/
+}*/
+
+/* ----------------------------------- */
+// parse left recursive text in parser combinatory is a little different
+// TODO: operator precedence, such as * should be earlier than +
+
+//#[inline]
+pub fn constant_expression() -> impl Parser<Out = ConstantExpression> {
+    constant_expression_binary().zip(Try(
+        (token("?") >> Many(attribute_instance(), None))
+        * (tobox!(constant_expression()) << token(":"))
+        * tobox!(constant_expression())
+    )).map(|(x, y)| match y {
+        Some(z) => ConstantExpression::Condition(Box::new(x), z.0.0, Box::new(z.0.1), Box::new(z.1)),
+        None => x,
+    })
 }
+
+fn constant_expression_binary() -> impl Parser<Out = ConstantExpression> {
+    constant_expression_unary().zip(Try(binary_operator().zip(Many(attribute_instance(), None)) * tobox!(constant_expression())))
+        .map(|x| match x.1 {
+            Some(y) => ConstantExpression::Binary(Box::new(x.0), y.0.0.to_string(), y.0.1, Box::new(y.1)),
+            None => x.0,
+        })
+}
+
+fn constant_expression_unary() -> impl Parser<Out = ConstantExpression> {
+    (constant_primary().map(ConstantExpression::ConstantPrimary))
+        | (unary_operator().zip(Many(attribute_instance(), None)) * constant_primary())
+            .map(|x| ConstantExpression::Unary(x.0.0.to_string(), x.0.1, x.1))
+}
+
+/* ----------------------------------- */
 
 /// constant_mintypmax_expression ::=
 ///  constant_expression

@@ -1,9 +1,9 @@
 use parser_rust_simple::prelude::*;
-use crate::verilog::general::identifiers::hierarchical_identifier;
+use crate::verilog::general::identifiers::{hierarchical_identifier, parameter_identifier};
 
 use super::ast::*;
 use super::concatenations::{concatenation, multiple_concatenation};
-use super::expressions::{range_expression, mintypmax_expression};
+use super::expressions::{range_expression, mintypmax_expression, constant_range_expression};
 use super::numbers::number;
 //use crate::verilog::general::identifiers::*;
 //use super::expressions::*;
@@ -23,9 +23,10 @@ use super::strings::string;
 ///  | string
 pub fn constant_primary() -> impl Parser<Out = ConstantPrimary> {
     number().map(ConstantPrimary::Number)
+        | (parameter_identifier().zip(Try(Token("[") >> tobox!(constant_range_expression()) << Token("]"))))
+            .map(|x| ConstantPrimary::Parameter(x.0))//TODO:range expression
         //TODO
-        /*.or(parameter_identifier().zip(Try(Token("[") >> constant_range_expression() << Token("]"))))
-        .or(specparam_identifier().zip(Try(Token("[") >> constant_range_expression() << Token("]"))))
+        /*.or(specparam_identifier().zip(Try(Token("[") >> constant_range_expression() << Token("]"))))
         .or(constant_concatenation())
         .or(constant_multiple_concatenation())
         .or(constant_function_call())

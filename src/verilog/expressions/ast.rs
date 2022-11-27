@@ -22,6 +22,9 @@ pub enum ConstantOrNot<T> {
 #[derive(Debug)]
 pub enum ConstantExpression {
     ConstantPrimary(ConstantPrimary),
+    Unary(String, Vec<Attr>, ConstantPrimary),
+    Binary(Box<ConstantExpression>, String, Vec<Attr>, Box<ConstantExpression>),
+    Condition(Box<ConstantExpression>, Vec<Attr>, Box<ConstantExpression>, Box<ConstantExpression>),
 }
 
 #[derive(Debug)]
@@ -48,7 +51,7 @@ pub enum MintypmaxExpression {
 pub enum Expression {
     Primary(Primary),
     Unary(String, Vec<Attr>, Primary),
-    Binary(Box<Expression>, String,Vec<Attr> , Box<Expression>),
+    Binary(Box<Expression>, String, Vec<Attr> , Box<Expression>),
     Condition(Box<Expression>, Vec<Attr>, Box<Expression>, Box<Expression>),
 }
 
@@ -63,7 +66,7 @@ pub enum RangeExpression {
 #[derive(Debug)]
 pub enum ConstantPrimary {
     Number(Number),
-    Parameter(),
+    Parameter(String),
 }
 
 #[derive(Debug)]
