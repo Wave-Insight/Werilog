@@ -73,9 +73,9 @@ fn constant_expression_unary() -> impl Parser<Out = ConstantExpression> {
 ///  | constant_expression : constant_expression : constant_expression
 pub fn constant_mintypmax_expression() -> impl Parser<Out = ConstantMintypmaxExpression> {
     constant_expression().map(|x| ConstantMintypmaxExpression::ConstantExpression(x))
-        | ((constant_expression().left(white_space()) << token(":"))
-            * (constant_expression().left(white_space()) << token(":"))
-            * constant_expression())
+        | ((constant_expression().left(token(":")))
+            * (tobox!(constant_expression()).left(token(":")))
+            * tobox!(constant_expression()))
             .map(|((a,b),c)| ConstantMintypmaxExpression::Three(a,b,c))
 }
 
@@ -85,13 +85,13 @@ pub fn constant_mintypmax_expression() -> impl Parser<Out = ConstantMintypmaxExp
 ///  | constant_base_expression +: width_constant_expression
 ///  | constant_base_expression -: width_constant_expression
 pub fn constant_range_expression() -> impl Parser<Out = ConstantRangeExpression> {
-    constant_expression().map(ConstantRangeExpression::Single)
-        | ((msb_constant_expression().left(white_space()) << token(":")) * lsb_constant_expression())
-            .map(ConstantRangeExpression::To)
+    ((msb_constant_expression().left(white_space()) << token(":")) * lsb_constant_expression())
+        .map(ConstantRangeExpression::To)
         | ((constant_base_expression().left(white_space()) << token("+:")) * width_constant_expression())
             .map(ConstantRangeExpression::Add)
         | ((constant_base_expression().left(white_space()) << token("-:")) * width_constant_expression())
             .map(ConstantRangeExpression::Sub)
+        | tobox!(constant_expression()).map(ConstantRangeExpression::Single)
 }
 
 /// dimension_constant_expression ::= constant_expression
