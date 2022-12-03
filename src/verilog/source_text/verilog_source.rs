@@ -28,18 +28,29 @@ pub fn description() -> impl Parser<Out = String> {
 ///   endmodule
 pub fn module_declaration() -> impl Parser<Out = ModuleDeclaration> {
     (Many(attribute_instance(), None) * module_keyword().right(module_identifier())
-        * Try(module_parameter_port_list()) * list_of_ports().left(token(";"))
+        * Try(module_parameter_port_list()) * tobox!(list_of_ports()).left(token(";"))
         * (Many(module_item(), None) << token("endmodule")))
         .map(|((((attr, name), para), port), item)| ModuleDeclaration::Ports(attr, name, para, port, item))
         | (Many(attribute_instance(), None) * module_keyword().right(module_identifier())
-            * Try(module_parameter_port_list()) * (Try(list_of_port_declarations()) << token(";"))
-            * (Many(non_port_module_item(), None) << token("endmodule")))
+            * tobox!(Try(module_parameter_port_list())) * (tobox!(Try(list_of_port_declarations())) << token(";"))
+            * (Many(tobox!(non_port_module_item()), None) << token("endmodule")))
             .map(|((((attr, name), para), port), item)| ModuleDeclaration::NonPorts(attr, name, para, port, item))
 }
 
 /// module_keyword ::= module | macromodule
 pub fn module_keyword<'a>() -> impl Parser<Out = &'a str> {
     token("module") | token("macromodule")
+}
+
+#[test]
+fn memsize() {
+    //425760
+    //139680
+    println!("module declaration: {}", std::mem::size_of_val(&module_declaration()));
+    println!("item: {}", std::mem::size_of_val(&non_port_module_item()));
+    println!("module item: {}", std::mem::size_of_val(&module_item()));
+    println!("list port: {}", std::mem::size_of_val(&list_of_ports()));
+    println!("module para: {}", std::mem::size_of_val(&module_parameter_port_list()));
 }
 
 #[test]
