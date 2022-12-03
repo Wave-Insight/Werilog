@@ -89,6 +89,24 @@ pub fn parameter_override() -> impl Parser<Out = String> {
 
 #[test]
 fn test() {
+    println!("{:?}", module_or_generate_item_declaration().run("integer a;")); // integer value
+    //println!("{:?}", module_or_generate_item_declaration().run("time last_chng;")); // time value
+    println!("{:?}", module_or_generate_item_declaration().run("real float ;")); // a variable to store a real value
+    println!("{:?}", module_or_generate_item_declaration().run("realtime rtime ;")); // a variable to store time as a real value
+
+    println!("{:?}", module_or_generate_item_declaration().run("reg x[11:0];")); // scalar reg
+    println!("{:?}", module_or_generate_item_declaration().run("wire [0:7] y[5:0];")); // 8-bit-wide vector wire indexed from 0 to 7
+    println!("{:?}", module_or_generate_item_declaration().run("reg [31:0] x [127:0];")); // 32-bit-wide reg
+
+    println!("{:?}", module_or_generate_item_declaration().run("reg [7:0] mema[0:255];")); // declares a memory mema of 256 8-bit
+                                                                                           // registers. The indices are 0 to 255
+    println!("{:?}", module_or_generate_item_declaration().run("reg arrayb[7:0][0:255];")); // declare a two-dimensional array of
+                                                                                            // one bit registers
+    println!("{:?}", module_or_generate_item_declaration().run("wire w_array[7:0][5:0];")); // declare array of wires
+    println!("{:?}", module_or_generate_item_declaration().run("integer inta[1:64];")); // an array of 64 integer values
+    //println!("{:?}", module_or_generate_item_declaration().run("time chng_hist[1:1000];")); // an array of 1000 time values
+    println!("{:?}", module_or_generate_item_declaration().run("integer t_index;"));
+
     let input = r"assign _zz_Tout_getTAU_SboxOut_1 = _zz_Tout_getTAU_SboxOut[7 : 0];";
     println!("{:?}", continuous_assign().run_with_out(input, Location::new()));
     let input = r"always @(*) begin

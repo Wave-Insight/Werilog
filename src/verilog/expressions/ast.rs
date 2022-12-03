@@ -88,7 +88,7 @@ pub enum Primary {
 
 #[derive(Debug)]
 pub enum NetLvalue {
-    VariableRef((String, Option<(Vec<ConstantExpression>, ConstantRangeExpression)>)),
+    VariableRef((String, Option<Vec<ConstantRangeExpression>>)),//ConstantRangeExpression
     Concatenation(Vec<NetLvalue>),
 }
 

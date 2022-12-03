@@ -27,6 +27,21 @@ pub fn net_assignment() -> impl Parser<Out = NetAssign> {
 
 #[test]
 fn test() {
+    fn print_parse(input: &str) {
+        println!("{:?}", net_assignment().run(input));
+    }
+    print_parse("mema = 0;"); // Illegal syntax- Attempt to write to entire array
+    print_parse("arrayb[1] = 0;"); // Illegal Syntax - Attempt to write to elements
+                                         // [1][0]..[1][255]
+    print_parse("arrayb[1][12:31] = 0;"); // Illegal Syntax - Attempt to write to
+                                                // elements [1][12]..[1][31]
+    print_parse("mema[1] = 0;"); // Assigns 0 to the second element of mema
+    print_parse("arrayb[1][0] = 0;"); // Assigns 0 to the bit referenced by indices
+                                            // [1][0]
+    print_parse("inta[4] = 33559;"); // Assign decimal number to integer in array
+    print_parse("chng_hist[t_index] = $time;"); // Assign current simulation time to
+                                                      // element addressed by integer index
+
     let input = "_zz_Tout_getTAU_SboxOut_5 = 1'b1;";
     println!("{:?}", net_assignment().run_with_out(input, Location::new()));
     let input = "assign _zz_Tout_getTAU_SboxOut_5 = 1'b1;";

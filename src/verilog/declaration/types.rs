@@ -145,6 +145,39 @@ pub fn time_declaration() -> impl Parser<Out = String> {
 
 #[test]
 fn test() {
+    println!("{:?}", net_declaration().run("wand w;")); // a scalar net of type "wand"
+    println!("{:?}", net_declaration().run("tri [15:0] busa;")); // a three-state 16-bit bus
+    //println!("{:?}", net_declaration().run("trireg (small) storeit;")); // a charge storage node of strength small
+    println!("{:?}", reg_declaration().run("reg a;")); // a scalar reg
+    println!("{:?}", reg_declaration().run("reg[3:0] v;")); // a 4-bit vector reg made up of (from most to
+    // least significant)v[3], v[2], v[1], and v[0]
+    println!("{:?}", reg_declaration().run("reg signed [3:0] signed_reg;")); // a 4-bit vector in range -8 to 7
+    println!("{:?}", reg_declaration().run("reg [-1:4] b;")); // a 6-bit vector reg
+    println!("{:?}", net_declaration().run("wire w1, w2;")); // declares two wires
+    println!("{:?}", reg_declaration().run("reg [4:0] x, y, z;")); // declares three 5-bit regs
+
+    println!("{:?}", net_declaration().run("tri1 scalared [63:0] bus64;")); //a bus that will be expanded
+    println!("{:?}", net_declaration().run("tri vectored [31:0] data;")); //a bus that may or may not be expanded
+
+    // println!("{:?}", net_declaration().run("trireg a;")); // trireg net of charge strength medium
+    // println!("{:?}", net_declaration().run("trireg (large) #(0,0,50) cap1;")); // trireg net of charge strength large
+    //                                                                            // with charge decay time 50 time units
+    // println!("{:?}", net_declaration().run("trireg (small)signed [3:0] cap2;")); // signed 4-bit trireg vector of
+    //                                                                              // charge strength small 
+
+    println!("{:?}", parameter_declaration().run("parameter msb = 7;")); // defines msb as a constant value 7
+    println!("{:?}", parameter_declaration().run("parameter e = 25, f = 9;")); // defines two constant numbers
+    println!("{:?}", parameter_declaration().run("parameter r = 5.7;")); // declares r as a real parameter
+    println!("{:?}", parameter_declaration().run("parameter byte_size = 8,"));
+    //println!("{:?}", parameter_declaration().run("byte_mask = byte_size - 1;"));
+    println!("{:?}", parameter_declaration().run("parameter average_delay = (r + f) / 2;")); // TODO:
+    println!("{:?}", parameter_declaration().run("parameter signed [3:0] mux_selector = 0;"));
+    println!("{:?}", parameter_declaration().run("parameter real r1 = 3.5e17;")); // TODO: real parameter
+    println!("{:?}", parameter_declaration().run("parameter p1 = 13'h7e;"));
+    println!("{:?}", parameter_declaration().run("parameter [31:0] dec_const = 1'b1;")); // value converted to 32 bits
+    println!("{:?}", parameter_declaration().run("parameter newconst = 3'h4;")); // implied range of [2:0]
+    println!("{:?}", parameter_declaration().run("parameter newconst = 4;")); // implied range of at least [31:0]
+
     println!("{:?}", inout_declaration().run("inout [5:0] signal_inout"));
     println!("{:?}", input_declaration().run("input signed [7:0] signal_input"));
     println!("{:?}", input_declaration().run("input signed       signal_input"));

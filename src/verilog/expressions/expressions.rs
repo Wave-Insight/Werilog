@@ -235,6 +235,22 @@ fn width_constant_expression() -> impl Parser<Out = ConstantExpression> {
 
 #[test]
 fn test() {
+    println!("{:?}", expression().run("A + B - C"));
+    println!("{:?}", expression().run("A + B / C"));
+    println!("{:?}", expression().run("(A + B) / C"));
+    println!("{:?}", expression().run(" -12 / 3"));// TODO:
+    println!("{:?}", expression().run("-'d 12 / 3"));
+    println!("{:?}", expression().run("-'sd 12 / 3"));
+    println!("{:?}", expression().run(" -4'sd 12 / 3"));
+    println!("{:?}", expression().run("regA & (regB | regC)"));
+
+    println!("{:?}", expression().run("a < foo - 1"));
+    println!("{:?}", expression().run("a < (foo - 1)"));
+    println!("{:?}", expression().run("a < size-1 && b != c && index != lastone")); // TODO:
+    println!("{:?}", expression().run("(a < size-1) && (b != c) && (index != lastone)"));
+    println!("{:?}", expression().run("(!inword)"));
+    println!("{:?}", expression().run("(inword == 0)"));
+
     let input = "5";
     println!("{:?}", expression().run_with_out(input, Location::new()));
     let input = "some_signal";

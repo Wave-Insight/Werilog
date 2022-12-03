@@ -344,65 +344,21 @@ fn keywords() -> Vec<String> {
 }
 
 #[test]
-fn bnf() {
-    use crate::ebnf_tools::ebnf;
-    let input = r"
-block_identifier ::= identifier
-cell_identifier ::= identifier
-config_identifier ::= identifier
-
-event_identifier ::= identifier
-function_identifier ::= identifier
-gate_instance_identifier ::= identifier
-generate_block_identifier ::= identifier
-genvar_identifier ::= identifier
-hierarchical_block_identifier ::= hierarchical_identifier
-hierarchical_event_identifier ::= hierarchical_identifier
-hierarchical_function_identifier ::= hierarchical_identifier
-
-hierarchical_net_identifier ::= hierarchical_identifier
-hierarchical_parameter_identifier ::= hierarchical_identifier
-hierarchical_variable_identifier ::= hierarchical_identifier
-hierarchical_task_identifier ::= hierarchical_identifier
-identifier ::= simple_identifier | escaped_identifier
-inout_port_identifier ::= identifier
-input_port_identifier ::= identifier
-instance_identifier ::= identifier
-library_identifier ::= identifier
-module_identifier ::= identifier
-module_instance_identifier ::= identifier
-net_identifier ::= identifier
-output_port_identifier ::= identifier
-parameter_identifier ::= identifier
-port_identifier ::= identifier
-real_identifier ::= identifier
-
-specparam_identifier ::= identifier
-
-task_identifier ::= identifier
-terminal_identifier ::= identifier
-text_macro_identifier ::= identifier
-topmodule_identifier ::= identifier
-udp_identifier ::= identifier
-udp_instance_identifier ::= identifier
-variable_identifier ::= identifier 
-
-
-escaped_identifier ::= \ {Any_ASCII_character_except_white_space} white_space
-hierarchical_identifier ::= { identifier [ [ constant_expression ] ] . } identifier
-simple_identifier3 ::= [ a-zA-Z_ ] { [ a-zA-Z0-9_$ ] }
-system_function_identifier4 ::= $[ a-zA-Z0-9_$ ]{ [ a-zA-Z0-9_$ ] }
-system_task_identifier4 ::= $[ a-zA-Z0-9_$ ]{ [ a-zA-Z0-9_$ ] }
-    ";
-    let parser = ebnf(input);
-    match parser {
-        Ok(x) => println!("{}", x),
-        Err(e) => println!("error at {:?}:\n{}", e, input.lines().nth(e.line-1).unwrap()),
-    }
-}
-
-#[test]
 fn test() {
+    println!("{:?}", simple_identifier().run("shiftreg_a"));
+    println!("{:?}", simple_identifier().run("busa_index"));
+    println!("{:?}", simple_identifier().run("error_condition"));
+    println!("{:?}", simple_identifier().run("merge_ab"));
+    println!("{:?}", simple_identifier().run("_bus3"));
+    println!("{:?}", simple_identifier().run("n$657"));
+
+    println!("{:?}", escaped_identifier().run(r"\busa+index"));
+    println!("{:?}", escaped_identifier().run(r"\-clock"));
+    println!("{:?}", escaped_identifier().run(r"\***error-condition***"));
+    println!("{:?}", escaped_identifier().run(r"\net1/\net2"));
+    println!("{:?}", escaped_identifier().run(r"\{a,b}"));
+    println!("{:?}", escaped_identifier().run(r"\a*(b+c)"));
+
     let input = r"$abc123_$x\a others";
     let parser = system_function_identifier();
     println!("{:?}", parser.run(input));
