@@ -1,7 +1,7 @@
 use parser_rust_simple::prelude::*;
 
 use crate::verilog::expressions::expressions::{
-    constant_expression,
+    //constant_expression,
     constant_range_expression,
     expression,
     range_expression
@@ -10,15 +10,14 @@ use crate::verilog::general::identifiers::{hierarchical_net_identifier, hierarch
 
 use super::ast::{NetLvalue, VariableLvalue};
 
-//TODO:all
-
 /// net_lvalue ::=
 ///  hierarchical_net_identifier [ { [ constant_expression ] } [ constant_range_expression ] ]
 ///  | { net_lvalue { , net_lvalue } }
 pub fn net_lvalue() -> impl Parser<Out = NetLvalue> {
+    // TODO: constant_expression
     (hierarchical_net_identifier().zip(Try(
-        Many(token("[") >> tobox!(constant_expression()) << token("]"), None)
-            * (token("[") >> tobox!(constant_range_expression()) << token("]"))
+        Many(token("[") >> tobox!(constant_range_expression()) << token("]"), None)
+            //* (token("[") >> tobox!(constant_range_expression()) << token("]"))
     ))).map(NetLvalue::VariableRef)
     .or( token("{") >> Many(tobox!(net_lvalue()), Some(",")).map(NetLvalue::Concatenation) << token("}") )
 }
@@ -33,4 +32,3 @@ pub fn variable_lvalue() -> impl Parser<Out = VariableLvalue> {
     ))).map(VariableLvalue::VariableRef)
     .or( token("{") >> Many(tobox!(variable_lvalue()), Some(",")).map(VariableLvalue::Concatenation) << token("}") )
 }
- 

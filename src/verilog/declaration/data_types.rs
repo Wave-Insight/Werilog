@@ -14,11 +14,11 @@ use super::{ranges::dimension, ast::*};
 pub fn net_type() -> impl Parser<Out = NetType> {
     token("supply0").map(|_| NetType::Supply0)
         | token("supply1").map(|_| NetType::Supply1)
-        | token("tri").map(|_| NetType::Tri)
         | token("triand").map(|_| NetType::Triand)
         | token("trior").map(|_| NetType::Trior)
         | token("tri0").map(|_| NetType::Tri0)
         | token("tri1").map(|_| NetType::Tri1)
+        | token("tri").map(|_| NetType::Tri)
         | token("uwire").map(|_| NetType::Uwire)
         | token("wire").map(|_| NetType::Wire)
         | token("wand").map(|_| NetType::Wand)
