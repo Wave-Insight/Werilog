@@ -53,7 +53,14 @@ pub fn non_io_define(signal: ModuleItemDeclaration) -> Vec<Signal> {
                     signed,
                     driver: Expression::NoExpr,
                 }).collect(),
-            crate::prelude::NetDeclaration::Range(_, _, _, _, _) => Vec::new(),//TODO:
+            crate::prelude::NetDeclaration::Range(_, _, signed, _range, name_and_range) => name_and_range.into_iter()
+                .map(|x| Signal {
+                    name: Some(x.0),
+                    data_types: SignalType::Combine,//TODO
+                    signed,
+                    driver: Expression::NoExpr,
+                    //TODO:vector range
+                }).collect(),
         },
         ModuleItemDeclaration::Reg(signed, _range, variable) => variable.into_iter()
             .map(|x| match x {
