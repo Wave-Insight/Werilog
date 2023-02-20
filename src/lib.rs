@@ -1,4 +1,6 @@
 pub mod verilog;
+pub mod testcase;
+pub mod simplify;
 pub mod ebnf_tools;
 pub mod prelude;
 

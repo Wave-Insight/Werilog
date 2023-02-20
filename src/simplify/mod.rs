@@ -1,9 +1,5 @@
-use std::collections::HashMap;
-
-
-
-use crate::prelude::{ModuleDeclaration, PortDeclaration, NonPortModuleItem};
-use self::{ast::{Module, Signal}, signal_define::{io_define, non_io_define}};
+use crate::prelude::{ModuleDeclaration, PortDeclaration, NonPortModuleItem, ModuleGenetateItem};
+use self::{ast::{Module, ModuleOperate}, signal_define::{io_define, non_io_define}};
 
 pub mod ast;
 pub mod signal_define;
@@ -12,45 +8,31 @@ pub fn simplify_verilog_module(module: ModuleDeclaration) -> Module {
     match module {
         ModuleDeclaration::Ports(_, _, _, _, _) => todo!(),
         ModuleDeclaration::NonPorts(_, name, _, port, item) => {
-            let (signal_table, signal) = signal_gen_non(port, item);
-            Module {
-                name,
-                signal_table,
-                signal
-            }
+            signal_gen_non(name, port, item)
         },
     }
 }
 
-fn signal_gen_non(port: Option<Vec<PortDeclaration>>, item: Vec<NonPortModuleItem>) -> (HashMap<String, u32>, HashMap<u32, Signal>) {
-    let mut signal_table = HashMap::new();
-    let mut signal = HashMap::new();
+fn signal_gen_non(name: String, port: Option<Vec<PortDeclaration>>, item: Vec<NonPortModuleItem>) -> Module {
+    let mut module = Module::new(name);
     let mut idx = 0;
-
     if let Some(valid_port) = port {
-        valid_port.into_iter()
+        (module, idx) = valid_port.into_iter()
             .map(io_define)
-            .for_each(|signal_vec| signal_vec.into_iter().for_each(|s| {
-                s.name.clone().map(|signal_name| signal_table.insert(signal_name, idx));
-                signal.insert(idx, s);
-                idx += 1;
-            }))
+            .map(ModuleOperate::SignalAdd)
+            .fold((module, idx), |(m, i), op| m.update(op, i));
     }
     item.into_iter()
-        .flat_map(|i| match i {
+        .map(|i| match i {
             NonPortModuleItem::ModuleGenetateItem(it) => match it {
-                crate::prelude::ModuleGenetateItem::ModuleItemDeclaration(_, sig) => Some(non_io_define(sig)),
-                crate::prelude::ModuleGenetateItem::ContinuousAssign(_, _) => None,
-                crate::prelude::ModuleGenetateItem::Initial(_, _) => None,
-                crate::prelude::ModuleGenetateItem::Always(_, _) => None,
+                ModuleGenetateItem::ModuleItemDeclaration(_, sig) =>
+                    ModuleOperate::SignalAdd(non_io_define(sig)),
+                ModuleGenetateItem::ContinuousAssign(_, _) => ModuleOperate::Todo,
+                ModuleGenetateItem::Initial(_, _) => ModuleOperate::Todo,
+                ModuleGenetateItem::Always(_, _) => ModuleOperate::Todo,
             },
         })
-        .for_each(|signal_vec| signal_vec.into_iter().for_each(|s| {
-            s.name.clone().map(|signal_name| signal_table.insert(signal_name, idx));
-            signal.insert(idx, s);
-            idx += 1;
-        }));
-    (signal_table, signal)
+        .fold((module, idx), |(m, i), op| m.update(op, i)).0
 }
 
 #[test]
